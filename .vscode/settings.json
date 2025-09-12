@@ -1,0 +1,6 @@
+{
+    "files.associations": {
+        "*.py": "python",
+        "74hc595_d1c2.h": "c"
+    }
+}
