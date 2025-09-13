@@ -13,7 +13,7 @@
 
 void UART_INIT(void); // UART 초기화
 unsigned char UART_receive(void); // 수신 버퍼 확인해서 수신 버퍼의 내용 반환하는 함수
-void UART_transmit(unsigned char data);
+void UART_transmit(unsigned char data); // 송신 버퍼에 실제로 8비트 데이터를 쓰는 함수
 void UART_printString(char *str);
 void UART_print8bitNumber(uint8_t no);
 void UART_print16bitNumber(uint16_t no);

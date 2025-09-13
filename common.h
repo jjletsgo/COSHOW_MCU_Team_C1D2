@@ -8,7 +8,7 @@
 
 #ifndef COMMON_H_
 #define COMMON_H_
-#include <stdint.h>
+#include <avr/io.h> 
 
 uint16_t combine_uint8(uint8_t high, uint8_t low);
 

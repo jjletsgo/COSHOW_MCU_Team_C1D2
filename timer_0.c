@@ -58,5 +58,18 @@ unsigned long millis() {
 	return m; // 수정한 경과 밀리초 반환
 }
 
+// timer0_millis 자료형의 오버플로 방지를위하여 1시간마다 누적 시간을 0으로 다시 초기화	
+void timer0_reset() {
+	unsigned long m;
+	uint8_t oldSREG = SREG; //SREG 상태 레지스터값을 저장
+	
+	cli(); // SREG 레지스터의 I를 0으로 clear하여 인터럽트 비활성화
+	
+	timer0_millis = 0;
+	timer0_micros = 0; 
+	
+	SREG = oldSREG; // 다시 인터럽트 활성화
+}
+
 
 

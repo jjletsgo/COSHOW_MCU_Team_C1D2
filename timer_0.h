@@ -16,7 +16,6 @@
 #include <avr/io.h>
 #include <avr/interrupt.h>
 
-#define SEGMENT_DELAY 5
 //마이크로초당 클럭을 저장. 값은 16
 #define CLOCKS_PER_MICRO ( F_CPU / 1000000L ) 
 //매크로 함수. 클럭수를 인자로 전달하면, 해당 클럭이 총 몇 마이크로초인지 반환해준다. 시스템 클럭이 16Mhz 일때를 기준으로 만들어진 매크로함수이다.
@@ -31,9 +30,10 @@
 // 오버플로 인터럽트 발생까지 밀리초 단위 증가 제외하고 남은 마이크로초 단위 (마이크로단위의 아주작은 나머지 느낌)
 #define MICROS_INCREMENT_PER_OVERFLOW ( MICROSECONDS_PER_TIMER0_OVERFLOW % 1000 ) 
 //프로그램 시작 이후 경과시간을 외부에서 쓸 수 있도록 extern 으로 선언
-extern volatile unsigned long timer0_millis = 0;
-extern volatile int timer0_micros = 0;
+extern volatile unsigned long timer0_millis; //
+extern volatile int timer0_micros;
 // 함수 프로토타입
 void timer0_init();
 unsigned long millis();
+void timer_reset();
 #endif /* TIMER_0_H_ */
