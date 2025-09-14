@@ -10,7 +10,7 @@
 uint8_t pattern[] = {0x03, 0x9F, 0x25, 0x0D, 0x99, 0x49, 0x41, 0x1F, 0x01, 0x09}; //숫자패턴 0~9를 미리 배열에 미리 저장해둠
 uint8_t digit[] = {0x08, 0x04, 0x02, 0x01}; //자릿수 선택 
 
-//12비트 프로토콜 만드는 함수
+//16비트 프로토콜 만드는 함수
 // 입력: 몇 번째 자리에 출력할지, 어떤 숫자 출력할지
 uint16_t make_16bit_protocol (uint8_t digit_num_minus_one, uint8_t num) {
 	uint16_t protocol_16bit = combine_uint8(digit[digit_num_minus_one], pattern[num]);
