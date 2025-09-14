@@ -23,7 +23,7 @@ void Init_74595(void) {
 	// latch clock pin (RCK) : PD2
 	
 	DDRC |= (1 << SER) | (1 << SCK) ; //SER,SCK 와 연결된 atmeag328p의 핀을 출력으로 설정
-	DDRD |= (1 << RCK); // RCK와 연결된 atmeag328p의 핀을 출력으로 설정
+	DDRB |= (1 << RCK); // RCK와 연결된 atmeag328p의 핀을 출력으로 설정
 }
 
 // SCK로 펄스하나 쏴주는 함수. 평소에는 LOW 상태 유지하므로 -> SCK로 positive edge 하나 쏴주는 것 -> 1bit shift 된다.
@@ -36,8 +36,8 @@ void ShiftClock(void) {
 // 이 함수 쓰면 시프트 레지스터에 저장되있던 8비트 값이 병렬 출력된다.
 void LatchClock(void)
 {
-	PORTD |= (1 << RCK); // PORTC의 6번 비트 (PC6=RCK) 를 HIGH로 설정
-	PORTD &= ~(1 << RCK); // PORTC의 6번 비트 (PC6=RCK) 를 LOW로 설정
+	PORTB |= (1 << RCK); // PORTC의 6번 비트 (PC6=RCK) 를 HIGH로 설정
+	PORTB &= ~(1 << RCK); // PORTC의 6번 비트 (PC6=RCK) 를 LOW로 설정
 }
 
 void WordDataWrite(uint16_t data) { //인자로 16비트 패턴을 전달받음
