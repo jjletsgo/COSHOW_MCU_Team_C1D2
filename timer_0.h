@@ -15,6 +15,7 @@
 
 #include <avr/io.h>
 #include <avr/interrupt.h>
+#include "UART.h"
 
 //마이크로초당 클럭을 저장. 값은 16
 #define CLOCKS_PER_MICRO ( F_CPU / 1000000L ) 
@@ -32,8 +33,16 @@
 //프로그램 시작 이후 경과시간을 외부에서 쓸 수 있도록 extern 으로 선언
 extern volatile unsigned long timer0_millis; //
 extern volatile int timer0_micros;
+extern volatile int min;
+extern volatile unsigned long present_time;
+extern volatile unsigned long previous_time;
+
 // 함수 프로토타입
 void timer0_init();
+void timer0_ovf_start();
+void timer0_ovf_end();
+void timer0_count_start();
+void timer0_count_end();
+uint8_t is_1sec_passed ();
 unsigned long millis();
-void timer_reset();
 #endif /* TIMER_0_H_ */

@@ -9,16 +9,61 @@
 #include "timer_0.h"
 
 //프로그램 시작 이후 경과시간을 전역변수로 선언
-volatile unsigned long timer0_millis = 0;
-volatile int timer0_micros = 0;
+volatile unsigned long timer0_millis = 0; //누적 시간 (밀리 단위)
+volatile int timer0_micros = 0 ;// 누적 시간 (마이크로 단위. 찌거기로 사용)
+volatile int min = 0; // 누적 분
+//volatile uint8_t num_digits[4]; // 이건 7세그먼트쪽에서 쓰는게 맞을듯
+volatile unsigned long present_time = 0; //현재시간
+volatile unsigned long previous_time = 0; //과거시간
 
 //timer0 초기화
 void timer0_init() {
 	TCCR0B |= (1 << CS01) | (1 << CS00); // Timer0 활성화, 내부 클럭 소스 사용, 분주비 64로 설정
-	TIMSK0 |= (1 << TOIE0); // Timer0 오버플로 인터럽트 활성화
+	//TIMSK0 |= (1 << TOIE0); // Timer0 오버플로 인터럽트 활성화
 	sei(); //전역 인터럽트 활성화
 }
 
+void timer0_ovf_start() {
+	TIMSK0 |= (1 << TOIE0); // Timer0 오버플로 인터럽트 활성화
+	
+}
+
+void timer0_ovf_end() {
+	TIMSK0 &= ~(1 << TOIE0); // Timer0 오버플로 인터럽트 비활성화
+}
+
+// 타이머 0 오버플로 인터럽트 활성화 -> timer0_millis 와 timer0_micros가 업데이트되기 시작함
+void timer0_count_start() {
+	timer0_ovf_start(); 
+	previous_time=millis();
+}
+
+// 타이머0 오버플로 인터럽트 비활성화 -> timer0_millis 와 timer0_micros가 더이상 업데이트되지않음.
+void timer0_count_end() {
+	timer0_ovf_end(); 
+	timer0_millis = 0;
+	timer0_micros = 0;
+	min = 0;
+	present_time = 0;
+	previous_time= 0;
+}
+
+
+//메인루프에서 실행해야하는 함수 -> 매 반복마다 1초 지났는지 체크
+uint8_t is_1sec_passed () {
+	present_time = millis();
+	//1초 경과 and cnt 플래그가 1이면 실행
+	if(present_time-previous_time >= 1000) //시연을 위해 1000ms=1초 로 설정
+	{ //1초 경과시
+		previous_time = present_time; //이전 시간을 현재 시간으로 설정
+		min++;//1분 증가
+		//디버깅용, pc로 uart 송신
+		UART_printString("1sec_passed\n");
+		return 1;
+	} else {
+		return 0;
+	}
+}
 
 // 오버플로우가 몇초마다 발생하는지 아니까 그걸 이용해서 오버플로우 발생시마다 경과시간 누적
 // 즉, 인터럽트가 주기적으로 계속 발생하며 누적 경과 시간을 계속해서 업데이트함
@@ -38,7 +83,7 @@ ISR(TIMER0_OVF_vect) {
 	// 앞서 밀리초로 변환한 만큼을 f에서 빼준다.
 	f = f % 1000;
 	
-	// 전역 변수에 ISR에서 수정한 누적(경과) 시간 값을 반영해준다.
+	// 외부로 노출되는 전역 변수에 ISR에서 수정한 누적(경과) 시간 값을 반영해준다.
 	timer0_millis = m;
 	timer0_micros = f;
 	
@@ -58,18 +103,6 @@ unsigned long millis() {
 	return m; // 수정한 경과 밀리초 반환
 }
 
-// timer0_millis 자료형의 오버플로 방지를위하여 1시간마다 누적 시간을 0으로 다시 초기화	
-void timer0_reset() {
-	unsigned long m;
-	uint8_t oldSREG = SREG; //SREG 상태 레지스터값을 저장
-	
-	cli(); // SREG 레지스터의 I를 0으로 clear하여 인터럽트 비활성화
-	
-	timer0_millis = 0;
-	timer0_micros = 0; 
-	
-	SREG = oldSREG; // 다시 인터럽트 활성화
-}
 
 
 

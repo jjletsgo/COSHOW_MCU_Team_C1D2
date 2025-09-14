@@ -10,9 +10,11 @@
 
 #ifndef _7_SEGMENT_H_
 #define _7_SEGMENT_H_
-
+#include "timer_0.h"
 #include <avr/io.h> 
 #include "common.h"
+#include "UART.h"
+#include <util/delay.h>
 /*
 현재 Atmega328p의 PC4,5,6이 SER,SCK,RCK에 연결되어있음
 */
@@ -26,6 +28,11 @@ void ShiftClock(void);
 void LatchClock(void);
 void WordDataWrite(uint16_t data);
 uint16_t make_16bit_protocol (uint8_t digit_num, uint8_t num);
+void init_7_segment();
+void count_on_7_segment();
+void idle_7_segment();
+void work_7_segment();
+
 
 
 
