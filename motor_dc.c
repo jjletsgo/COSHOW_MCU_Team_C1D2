@@ -1,8 +1,9 @@
-#include <avr/io.h>
-#include "dc_motor.h"
+#include "board.h"
+#include "motor_dc.h"
 
 #define PWM_TOP 249   
-void dc_motor_init(void)
+
+void motor_dc_init(void)
 {
     DDRB  |= (1 << PB2);  
 
@@ -20,14 +21,14 @@ void dc_motor_init(void)
     TCCR1B |= (1 << CS11) | (1 << CS10);
 }
 
-void dc_motor_start(uint8_t duty)  
+void motor_dc_start(uint8_t duty)  
 {
     uint32_t pwm = (uint32_t)duty * PWM_TOP / 255U;
     if (pwm >= PWM_TOP) pwm = PWM_TOP - 1;
     OCR1B = (uint16_t)pwm;
 }
 
-void dc_motor_stop(void)
+void motor_dc_stop(void)
 {
     OCR1B = 0;
     TCCR1A &= ~(1 << COM1B1);
