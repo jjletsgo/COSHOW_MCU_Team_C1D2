@@ -6,43 +6,43 @@
  */ 
 
 
-#include "timer_0.h"
+#include "timer_1.h"
 
 //프로그램 시작 이후 경과시간을 전역변수로 선언
-volatile unsigned long timer0_millis = 0; //누적 시간 (밀리 단위)
-volatile int timer0_micros = 0 ;// 누적 시간 (마이크로 단위. 찌거기로 사용)
+volatile unsigned long timer1_millis = 0; //누적 시간 (밀리 단위)
+volatile int timer1_micros = 0 ;// 누적 시간 (마이크로 단위. 찌거기로 사용)
 volatile int min = 0; // 누적 분
 //volatile uint8_t num_digits[4]; // 이건 7세그먼트쪽에서 쓰는게 맞을듯
 volatile unsigned long present_time = 0; //현재시간
 volatile unsigned long previous_time = 0; //과거시간
 
 //timer0 초기화
-void timer0_init() {
-	TCCR0B |= (1 << CS01) | (1 << CS00); // Timer0 활성화, 내부 클럭 소스 사용, 분주비 64로 설정
-	//TIMSK0 |= (1 << TOIE0); // Timer0 오버플로 인터럽트 활성화
+void timer1_init() {
+	TCCR1B |= (1 << CS10) | (1 << CS12); // Timer1 활성화, 내부 클럭 소스 사용, 분주비 1024로 설정
+	//TIMSK1 |= (1 << TOIE1); // Timer1 오버플로 인터럽트 활성화
 	sei(); //전역 인터럽트 활성화
 }
 
-void timer0_ovf_start() {
-	TIMSK0 |= (1 << TOIE0); // Timer0 오버플로 인터럽트 활성화
+void timer1_ovf_start() {
+	TIMSK1 |= (1 << TOIE1); // Timer1 오버플로 인터럽트 활성화
 	
 }
 
-void timer0_ovf_end() {
-	TIMSK0 &= ~(1 << TOIE0); // Timer0 오버플로 인터럽트 비활성화
+void timer1_ovf_end() {
+	TIMSK0 &= ~(1 << TOIE1); // Timer1 오버플로 인터럽트 비활성화
 }
 
-// 타이머 0 오버플로 인터럽트 활성화 -> timer0_millis 와 timer0_micros가 업데이트되기 시작함
-void timer0_count_start() {
-	timer0_ovf_start(); 
+// 타이머 1 오버플로 인터럽트 활성화 -> timer1_millis 와 timer1_micros가 업데이트되기 시작함
+void timer1_count_start() {
+	timer1_ovf_start(); 
 	previous_time=millis();
 }
 
-// 타이머0 오버플로 인터럽트 비활성화 -> timer0_millis 와 timer0_micros가 더이상 업데이트되지않음.
-void timer0_count_end() {
-	timer0_ovf_end(); 
-	timer0_millis = 0;
-	timer0_micros = 0;
+// 타이머1 오버플로 인터럽트 비활성화 -> timer1_millis 와 timer1_micros가 더이상 업데이트되지않음.
+void timer1_count_end() {
+	timer1_ovf_end(); 
+	timer1_millis = 0;
+	timer1_micros = 0;
 	min = 0;
 	present_time = 0;
 	previous_time= 0;
@@ -68,9 +68,9 @@ uint8_t is_1sec_passed () {
 
 // 오버플로우가 몇초마다 발생하는지 아니까 그걸 이용해서 오버플로우 발생시마다 경과시간 누적
 // 즉, 인터럽트가 주기적으로 계속 발생하며 누적 경과 시간을 계속해서 업데이트함
-ISR(TIMER0_OVF_vect) {
-	unsigned long m = timer0_millis;
-	int f = timer0_micros;
+ISR(TIMER1_OVF_vect) {
+	unsigned long m = timer1_millis;
+	int f = timer1_micros;
 	
 	m += MILLIS_INCREMENT_PER_OVERFLOW; //Timemr0 오버플로우 발생시마다 걸린 밀리초(몫)단위 누적. 누적(경과) 밀리초
 	f += MICROS_INCREMENT_PER_OVERFLOW; //Timer0 오버플로우 발생시마다 걸린 마이크로초단위(나머지) 누적. 누적(경과) 마이크로초
@@ -85,8 +85,8 @@ ISR(TIMER0_OVF_vect) {
 	f = f % 1000;
 	
 	// 외부로 노출되는 전역 변수에 ISR에서 수정한 누적(경과) 시간 값을 반영해준다.
-	timer0_millis = m;
-	timer0_micros = f;
+	timer1_millis = m;
+	timer1_micros = f;
 	
 }
 
@@ -97,7 +97,7 @@ unsigned long millis() {
 	
 	cli(); // SREG 레지스터의 I를 0으로 clear하여 인터럽트 비활성화
 	
-	m = timer0_millis; // m에 오버플로 인터럽트로 계산한 경과 밀리초 저장
+	m = timer1_millis; // m에 오버플로 인터럽트로 계산한 경과 밀리초 저장
 	
 	SREG = oldSREG; // 다시 인터럽트 활성화
 	
