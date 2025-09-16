@@ -16,6 +16,12 @@ void load_cell_init(void){
 	LOAD_CELL_SCK_PORT &= ~(1<<LOAD_CELL_SCK_PIN);		// SCK 초기 값: 0
 }
 
+/*
+ * @note: 24bit ADC 데이터 읽기
+ * @return: 24bit data, 2's complement
+ * - 25번째 클럭펄스: gain, type 결정 (gain: 128, type A) 
+ * - 24bit -> 32bit 부호 확장 
+*/
 int32_t load_cell_read(void){
 	int32_t count;
 	unsigned char i;
