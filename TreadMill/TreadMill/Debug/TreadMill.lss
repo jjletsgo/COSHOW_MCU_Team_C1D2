@@ -1,0 +1,370 @@
+
+TreadMill.elf:     file format elf32-avr
+
+Sections:
+Idx Name          Size      VMA       LMA       File off  Algn
+  0 .data         00000000  00800100  00800100  00000220  2**0
+                  CONTENTS, ALLOC, LOAD, DATA
+  1 .text         000001ac  00000000  00000000  00000074  2**1
+                  CONTENTS, ALLOC, LOAD, READONLY, CODE
+  2 .bss          00000008  00800100  00800100  00000220  2**0
+                  ALLOC
+  3 .comment      00000030  00000000  00000000  00000220  2**0
+                  CONTENTS, READONLY
+  4 .note.gnu.avr.deviceinfo 00000040  00000000  00000000  00000250  2**2
+                  CONTENTS, READONLY
+  5 .debug_aranges 000000b0  00000000  00000000  00000290  2**0
+                  CONTENTS, READONLY, DEBUGGING
+  6 .debug_info   00000c84  00000000  00000000  00000340  2**0
+                  CONTENTS, READONLY, DEBUGGING
+  7 .debug_abbrev 0000095d  00000000  00000000  00000fc4  2**0
+                  CONTENTS, READONLY, DEBUGGING
+  8 .debug_line   00000592  00000000  00000000  00001921  2**0
+                  CONTENTS, READONLY, DEBUGGING
+  9 .debug_frame  000000f0  00000000  00000000  00001eb4  2**2
+                  CONTENTS, READONLY, DEBUGGING
+ 10 .debug_str    00000535  00000000  00000000  00001fa4  2**0
+                  CONTENTS, READONLY, DEBUGGING
+ 11 .debug_loc    000001cb  00000000  00000000  000024d9  2**0
+                  CONTENTS, READONLY, DEBUGGING
+ 12 .debug_ranges 00000070  00000000  00000000  000026a4  2**0
+                  CONTENTS, READONLY, DEBUGGING
+
+Disassembly of section .text:
+
+00000000 <__vectors>:
+   0:	0c 94 34 00 	jmp	0x68	; 0x68 <__ctors_end>
+   4:	0c 94 46 00 	jmp	0x8c	; 0x8c <__bad_interrupt>
+   8:	0c 94 46 00 	jmp	0x8c	; 0x8c <__bad_interrupt>
+   c:	0c 94 46 00 	jmp	0x8c	; 0x8c <__bad_interrupt>
+  10:	0c 94 46 00 	jmp	0x8c	; 0x8c <__bad_interrupt>
+  14:	0c 94 46 00 	jmp	0x8c	; 0x8c <__bad_interrupt>
+  18:	0c 94 46 00 	jmp	0x8c	; 0x8c <__bad_interrupt>
+  1c:	0c 94 46 00 	jmp	0x8c	; 0x8c <__bad_interrupt>
+  20:	0c 94 46 00 	jmp	0x8c	; 0x8c <__bad_interrupt>
+  24:	0c 94 46 00 	jmp	0x8c	; 0x8c <__bad_interrupt>
+  28:	0c 94 46 00 	jmp	0x8c	; 0x8c <__bad_interrupt>
+  2c:	0c 94 46 00 	jmp	0x8c	; 0x8c <__bad_interrupt>
+  30:	0c 94 46 00 	jmp	0x8c	; 0x8c <__bad_interrupt>
+  34:	0c 94 46 00 	jmp	0x8c	; 0x8c <__bad_interrupt>
+  38:	0c 94 46 00 	jmp	0x8c	; 0x8c <__bad_interrupt>
+  3c:	0c 94 46 00 	jmp	0x8c	; 0x8c <__bad_interrupt>
+  40:	0c 94 46 00 	jmp	0x8c	; 0x8c <__bad_interrupt>
+  44:	0c 94 46 00 	jmp	0x8c	; 0x8c <__bad_interrupt>
+  48:	0c 94 46 00 	jmp	0x8c	; 0x8c <__bad_interrupt>
+  4c:	0c 94 46 00 	jmp	0x8c	; 0x8c <__bad_interrupt>
+  50:	0c 94 46 00 	jmp	0x8c	; 0x8c <__bad_interrupt>
+  54:	0c 94 46 00 	jmp	0x8c	; 0x8c <__bad_interrupt>
+  58:	0c 94 46 00 	jmp	0x8c	; 0x8c <__bad_interrupt>
+  5c:	0c 94 46 00 	jmp	0x8c	; 0x8c <__bad_interrupt>
+  60:	0c 94 46 00 	jmp	0x8c	; 0x8c <__bad_interrupt>
+  64:	0c 94 46 00 	jmp	0x8c	; 0x8c <__bad_interrupt>
+
+00000068 <__ctors_end>:
+  68:	11 24       	eor	r1, r1
+  6a:	1f be       	out	0x3f, r1	; 63
+  6c:	cf ef       	ldi	r28, 0xFF	; 255
+  6e:	d8 e0       	ldi	r29, 0x08	; 8
+  70:	de bf       	out	0x3e, r29	; 62
+  72:	cd bf       	out	0x3d, r28	; 61
+
+00000074 <__do_clear_bss>:
+  74:	21 e0       	ldi	r18, 0x01	; 1
+  76:	a0 e0       	ldi	r26, 0x00	; 0
+  78:	b1 e0       	ldi	r27, 0x01	; 1
+  7a:	01 c0       	rjmp	.+2      	; 0x7e <.do_clear_bss_start>
+
+0000007c <.do_clear_bss_loop>:
+  7c:	1d 92       	st	X+, r1
+
+0000007e <.do_clear_bss_start>:
+  7e:	a8 30       	cpi	r26, 0x08	; 8
+  80:	b2 07       	cpc	r27, r18
+  82:	e1 f7       	brne	.-8      	; 0x7c <.do_clear_bss_loop>
+  84:	0e 94 c0 00 	call	0x180	; 0x180 <main>
+  88:	0c 94 d4 00 	jmp	0x1a8	; 0x1a8 <_exit>
+
+0000008c <__bad_interrupt>:
+  8c:	0c 94 00 00 	jmp	0	; 0x0 <__vectors>
+
+00000090 <ADC_init>:
+#include "board.h"
+#include "ADC.h"
+#include <util/delay.h>
+
+void ADC_init(void) {
+	ADMUX |= 0x40; //0b01000000, 6번 비트를 1로 set한다. -> ADC의 기준 전압을 AVcc(5V)로 설정한다. 추가적으로 ADLAR 건들지않았으므로 현재 우측정렬인 상태
+  90:	ec e7       	ldi	r30, 0x7C	; 124
+  92:	f0 e0       	ldi	r31, 0x00	; 0
+  94:	80 81       	ld	r24, Z
+  96:	80 64       	ori	r24, 0x40	; 64
+  98:	80 83       	st	Z, r24
+	
+	ADCSRA |= 0x07; //0b00000111, 2~0 번 비트를 1로 set 한다 -> 시스템 클럭 분주기의 division factor를 128 로 설정한다 -> 
+  9a:	ea e7       	ldi	r30, 0x7A	; 122
+  9c:	f0 e0       	ldi	r31, 0x00	; 0
+  9e:	80 81       	ld	r24, Z
+  a0:	87 60       	ori	r24, 0x07	; 7
+  a2:	80 83       	st	Z, r24
+	// ADC Clock Frequency는 16Mhz/128=125khz 가 된다. (최대 해상도로 사용하려면 100kHz~200kHz로 클럭 주파수 설정해야한다고
+	// 데이터시트에 나와있음.
+	ADCSRA |= (1 << ADEN); // ADEN을 1로 set 한다. -> ADC를 활성화한다.
+  a4:	80 81       	ld	r24, Z
+  a6:	80 68       	ori	r24, 0x80	; 128
+  a8:	80 83       	st	Z, r24
+	ADCSRA |= (1 << ADATE); // ADATE를 1로 set 한다. -> ADC 를 FREE RUNNIGN 모드(Auto triggering)로 돌린다. -> 선택된 신호의 positive edge마다 자동 AD변환 실행
+  aa:	80 81       	ld	r24, Z
+  ac:	80 62       	ori	r24, 0x20	; 32
+  ae:	80 83       	st	Z, r24
+	
+	
+	// ADMUX = ((ADMUX & 0xE0) | channel); // 0XE0은 왜 해주는건지 잘 모르겠다. channel로 ADC에 연결할 입력 ADC 채널을 선택한다.
+	ADCSRA |= (1 << ADSC); //ADSC 비트를 1로 set 한다. 현재 Free Running mode이므로 지금부터 자동 AD 변환을 시작한다.
+  b0:	80 81       	ld	r24, Z
+  b2:	80 64       	ori	r24, 0x40	; 64
+  b4:	80 83       	st	Z, r24
+  b6:	08 95       	ret
+
+000000b8 <ADC_select_channel>:
+}
+
+//channel로 0~5 입력해주면 ADC MUX가 해당 ADC 채널과 연결됨 
+void ADC_select_channel (unsigned char channel) {
+	ADMUX |= channel;
+  b8:	ec e7       	ldi	r30, 0x7C	; 124
+  ba:	f0 e0       	ldi	r31, 0x00	; 0
+  bc:	90 81       	ld	r25, Z
+  be:	89 2b       	or	r24, r25
+  c0:	80 83       	st	Z, r24
+	#else
+		//round up by default
+		__ticks_dc = (uint32_t)(ceil(fabs(__tmp)));
+	#endif
+
+	__builtin_avr_delay_cycles(__ticks_dc);
+  c2:	8f ed       	ldi	r24, 0xDF	; 223
+  c4:	9e e2       	ldi	r25, 0x2E	; 46
+  c6:	01 97       	sbiw	r24, 0x01	; 1
+  c8:	f1 f7       	brne	.-4      	; 0xc6 <ADC_select_channel+0xe>
+  ca:	00 c0       	rjmp	.+0      	; 0xcc <ADC_select_channel+0x14>
+  cc:	00 00       	nop
+  ce:	08 95       	ret
+
+000000d0 <read_ADC>:
+}
+
+//while문 내부에서 지속적으로 읽을 때 쓰는 함수
+int read_ADC(void) {
+	
+	while(!(ADCSRA & (1 << ADIF))); // ADCSRA의 ADIF가 1되면 전체가 0이 되면서 while문을 탈출한다.  
+  d0:	ea e7       	ldi	r30, 0x7A	; 122
+  d2:	f0 e0       	ldi	r31, 0x00	; 0
+  d4:	80 81       	ld	r24, Z
+  d6:	84 ff       	sbrs	r24, 4
+  d8:	fd cf       	rjmp	.-6      	; 0xd4 <read_ADC+0x4>
+	// (ADIF 비트는 ADC 변환이 끝나고 데이터 레지스터가 업데이트되면 1로 set된다)
+	return ADC; //ADC 데이터 레지스터를 반환한다. 
+  da:	80 91 78 00 	lds	r24, 0x0078	; 0x800078 <__DATA_REGION_ORIGIN__+0x18>
+  de:	90 91 79 00 	lds	r25, 0x0079	; 0x800079 <__DATA_REGION_ORIGIN__+0x19>
+}
+  e2:	08 95       	ret
+
+000000e4 <Button_ADC_getRaw>:
+
+// =============================
+// 버튼 상태 판별 (Raw ADC 값)
+// =============================
+Button_t Button_ADC_getRaw(uint16_t ADC_val) {
+    if (ADC_val < BUTTON_SPEED_UP_MAX) return BUTTON_SPEED_UP;
+  e4:	8d 32       	cpi	r24, 0x2D	; 45
+  e6:	91 05       	cpc	r25, r1
+  e8:	80 f0       	brcs	.+32     	; 0x10a <Button_ADC_getRaw+0x26>
+    else if (ADC_val < BUTTON_SPEED_DOWN_MAX) return BUTTON_SPEED_DOWN;
+  ea:	86 39       	cpi	r24, 0x96	; 150
+  ec:	91 05       	cpc	r25, r1
+  ee:	78 f0       	brcs	.+30     	; 0x10e <Button_ADC_getRaw+0x2a>
+    else if (ADC_val < BUTTON_ANGLE_UP_MAX) return BUTTON_ANGLE_UP;
+  f0:	82 32       	cpi	r24, 0x22	; 34
+  f2:	21 e0       	ldi	r18, 0x01	; 1
+  f4:	92 07       	cpc	r25, r18
+  f6:	68 f0       	brcs	.+26     	; 0x112 <Button_ADC_getRaw+0x2e>
+    else if (ADC_val < BUTTON_ANGLE_DOWN_MAX) return BUTTON_ANGLE_DOWN;
+  f8:	82 3c       	cpi	r24, 0xC2	; 194
+  fa:	21 e0       	ldi	r18, 0x01	; 1
+  fc:	92 07       	cpc	r25, r18
+  fe:	58 f0       	brcs	.+22     	; 0x116 <Button_ADC_getRaw+0x32>
+    else if (ADC_val < BUTTON_ON_OFF_MAX) return BUTTON_ON_OFF;
+ 100:	88 35       	cpi	r24, 0x58	; 88
+ 102:	92 40       	sbci	r25, 0x02	; 2
+ 104:	50 f0       	brcs	.+20     	; 0x11a <Button_ADC_getRaw+0x36>
+    else return BUTTON_NONE;
+ 106:	80 e0       	ldi	r24, 0x00	; 0
+ 108:	08 95       	ret
+
+// =============================
+// 버튼 상태 판별 (Raw ADC 값)
+// =============================
+Button_t Button_ADC_getRaw(uint16_t ADC_val) {
+    if (ADC_val < BUTTON_SPEED_UP_MAX) return BUTTON_SPEED_UP;
+ 10a:	81 e0       	ldi	r24, 0x01	; 1
+ 10c:	08 95       	ret
+    else if (ADC_val < BUTTON_SPEED_DOWN_MAX) return BUTTON_SPEED_DOWN;
+ 10e:	82 e0       	ldi	r24, 0x02	; 2
+ 110:	08 95       	ret
+    else if (ADC_val < BUTTON_ANGLE_UP_MAX) return BUTTON_ANGLE_UP;
+ 112:	83 e0       	ldi	r24, 0x03	; 3
+ 114:	08 95       	ret
+    else if (ADC_val < BUTTON_ANGLE_DOWN_MAX) return BUTTON_ANGLE_DOWN;
+ 116:	84 e0       	ldi	r24, 0x04	; 4
+ 118:	08 95       	ret
+    else if (ADC_val < BUTTON_ON_OFF_MAX) return BUTTON_ON_OFF;
+ 11a:	85 e0       	ldi	r24, 0x05	; 5
+    else return BUTTON_NONE;
+}
+ 11c:	08 95       	ret
+
+0000011e <Button_ADC_getDebounced>:
+
+// =============================
+// 디바운스 처리된 버튼 판별
+// =============================
+Button_t Button_ADC_getDebounced(uint16_t ADC_val) {
+    Button_t current = Button_ADC_getRaw(ADC_val);
+ 11e:	0e 94 72 00 	call	0xe4	; 0xe4 <Button_ADC_getRaw>
+    
+    // 현재 읽은 값이 이전 값과 같으면 카운터 증가
+    if (current == lastRead) {
+ 122:	90 91 03 01 	lds	r25, 0x0103	; 0x800103 <lastRead>
+ 126:	89 13       	cpse	r24, r25
+ 128:	08 c0       	rjmp	.+16     	; 0x13a <Button_ADC_getDebounced+0x1c>
+        if (count < DEBOUNCE_COUNT) {
+ 12a:	90 91 01 01 	lds	r25, 0x0101	; 0x800101 <count>
+ 12e:	9f 3f       	cpi	r25, 0xFF	; 255
+ 130:	31 f0       	breq	.+12     	; 0x13e <Button_ADC_getDebounced+0x20>
+            count++;
+ 132:	9f 5f       	subi	r25, 0xFF	; 255
+ 134:	90 93 01 01 	sts	0x0101, r25	; 0x800101 <count>
+ 138:	02 c0       	rjmp	.+4      	; 0x13e <Button_ADC_getDebounced+0x20>
+        }
+    } else {
+        // 값이 변경되면 카운터 리셋
+        count = 0;
+ 13a:	10 92 01 01 	sts	0x0101, r1	; 0x800101 <count>
+    }
+    
+    // 현재 값을 저장
+    lastRead = current;
+ 13e:	80 93 03 01 	sts	0x0103, r24	; 0x800103 <lastRead>
+    
+    // 충분한 시간 동안 같은 값이 유지되면 안정된 값으로 업데이트
+    if (count >= DEBOUNCE_COUNT) {
+ 142:	90 91 01 01 	lds	r25, 0x0101	; 0x800101 <count>
+ 146:	9f 3f       	cpi	r25, 0xFF	; 255
+ 148:	11 f4       	brne	.+4      	; 0x14e <Button_ADC_getDebounced+0x30>
+        lastStable = current;
+ 14a:	80 93 02 01 	sts	0x0102, r24	; 0x800102 <lastStable>
+    }
+    
+    return lastStable;
+}
+ 14e:	80 91 02 01 	lds	r24, 0x0102	; 0x800102 <lastStable>
+ 152:	08 95       	ret
+
+00000154 <Button_ADC_getPressed>:
+// 버튼 눌림 감지 (Edge Detection)
+// =============================
+Button_t Button_ADC_getPressed(uint16_t ADC_val) {
+    static Button_t previousStable = BUTTON_NONE;
+    
+    Button_t currentStable = Button_ADC_getDebounced(ADC_val);
+ 154:	0e 94 8f 00 	call	0x11e	; 0x11e <Button_ADC_getDebounced>
+    
+    // 이전 상태가 BUTTON_NONE이고 현재 상태가 버튼이면 눌림 감지
+    if (previousStable == BUTTON_NONE && currentStable != BUTTON_NONE) {
+ 158:	90 91 00 01 	lds	r25, 0x0100	; 0x800100 <_edata>
+ 15c:	91 11       	cpse	r25, r1
+ 15e:	05 c0       	rjmp	.+10     	; 0x16a <Button_ADC_getPressed+0x16>
+ 160:	88 23       	and	r24, r24
+ 162:	19 f0       	breq	.+6      	; 0x16a <Button_ADC_getPressed+0x16>
+        previousStable = currentStable;
+ 164:	80 93 00 01 	sts	0x0100, r24	; 0x800100 <_edata>
+        return currentStable;  // 버튼 눌림 이벤트 반환
+ 168:	08 95       	ret
+    }
+    
+    // 이전 상태를 업데이트
+    previousStable = currentStable;
+ 16a:	80 93 00 01 	sts	0x0100, r24	; 0x800100 <_edata>
+    
+    return BUTTON_NONE;  // 눌림 이벤트가 없으면 BUTTON_NONE 반환
+ 16e:	80 e0       	ldi	r24, 0x00	; 0
+}
+ 170:	08 95       	ret
+
+00000172 <Button_Init>:
+
+// =============================
+// 디바운싱 초기화 (필요시 호출)
+// =============================
+void Button_Init(void) {
+    lastRead = BUTTON_NONE;
+ 172:	10 92 03 01 	sts	0x0103, r1	; 0x800103 <lastRead>
+    lastStable = BUTTON_NONE;
+ 176:	10 92 02 01 	sts	0x0102, r1	; 0x800102 <lastStable>
+    count = 0;
+ 17a:	10 92 01 01 	sts	0x0101, r1	; 0x800101 <count>
+ 17e:	08 95       	ret
+
+00000180 <main>:
+
+#include <util/delay.h>
+
+
+int main(void){
+	Button_Init();
+ 180:	0e 94 b9 00 	call	0x172	; 0x172 <Button_Init>
+	ADC_init();
+ 184:	0e 94 48 00 	call	0x90	; 0x90 <ADC_init>
+	ADC_select_channel(2);
+ 188:	82 e0       	ldi	r24, 0x02	; 2
+ 18a:	0e 94 5c 00 	call	0xb8	; 0xb8 <ADC_select_channel>
+
+	while (1){
+		
+		switch (state_get()) {
+ 18e:	0e 94 ce 00 	call	0x19c	; 0x19c <state_get>
+			case STOP:
+
+			break;
+		}
+		
+		uint16_t adc_value = read_ADC();
+ 192:	0e 94 68 00 	call	0xd0	; 0xd0 <read_ADC>
+
+		Button_t pressed = Button_ADC_getPressed(adc_value); //폴링으로 눌린 버튼을 저장
+ 196:	0e 94 aa 00 	call	0x154	; 0x154 <Button_ADC_getPressed>
+ 19a:	f9 cf       	rjmp	.-14     	; 0x18e <main+0xe>
+
+0000019c <state_get>:
+	g_state.current = state;
+	SREG = sreg;
+}
+
+state_id_t state_get(void){
+	uint8_t sreg = SREG; 
+ 19c:	9f b7       	in	r25, 0x3f	; 63
+	cli();
+ 19e:	f8 94       	cli
+	state_id_t state = g_state.current;
+ 1a0:	80 91 04 01 	lds	r24, 0x0104	; 0x800104 <g_state>
+	SREG = sreg;
+ 1a4:	9f bf       	out	0x3f, r25	; 63
+	return state;
+}
+ 1a6:	08 95       	ret
+
+000001a8 <_exit>:
+ 1a8:	f8 94       	cli
+
+000001aa <__stop_program>:
+ 1aa:	ff cf       	rjmp	.-2      	; 0x1aa <__stop_program>
