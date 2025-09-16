@@ -23,14 +23,9 @@ int main(void) {
 	count_on_7_segment(); //타이머1 오버플로 인터럽트 활성화 및 previous time을 millis()로 설정 및 cnt를 1로 설정
 	
 	while(1) {
-		
 		work_7_segment();//7세그먼트 동작
 		
-		
 	}
-	
-	
-	
 	return 1;
 }
 

@@ -18,7 +18,7 @@ volatile unsigned long previous_time = 0; //과거시간
 
 //timer0 초기화
 void timer1_init() {
-	TCCR1B |= (1 << CS10) | (1 << CS12); // Timer1 활성화, 내부 클럭 소스 사용, 분주비 1024로 설정
+	TCCR1B |= (1 << CS10) | (1 << CS11); // Timer1 활성화, 내부 클럭 소스 사용, 분주비 1024로 설정
 	//TIMSK1 |= (1 << TOIE1); // Timer1 오버플로 인터럽트 활성화
 	sei(); //전역 인터럽트 활성화
 }

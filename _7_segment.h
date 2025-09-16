@@ -10,7 +10,7 @@
 
 #ifndef _7_SEGMENT_H_
 #define _7_SEGMENT_H_
-#include "timer_0.h"
+#include "timer_1.h"
 #include <avr/io.h> 
 #include "common.h"
 #include "UART.h"
