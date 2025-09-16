@@ -1,5 +1,13 @@
-﻿#include "board.h"
+﻿/*
+ * button.c
+ *
+ * Created: 2025-09-15 오후 6:54:13
+ *  Author: User
+ */ 
 #include "button.h"
+
+Button_t debug_button = BUTTON_NONE;
+
 
 // 정적 변수들 (디바운싱을 위한 상태 저장)
 static Button_t lastRead = BUTTON_NONE;
@@ -40,6 +48,7 @@ Button_t Button_ADC_getDebounced(uint16_t ADC_val) {
     // 충분한 시간 동안 같은 값이 유지되면 안정된 값으로 업데이트
     if (count >= DEBOUNCE_COUNT) {
         lastStable = current;
+		
     }
     
     return lastStable;
