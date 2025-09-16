@@ -11,6 +11,7 @@ uint8_t pattern[] = {0x03, 0x9F, 0x25, 0x0D, 0x99, 0x49, 0x41, 0x1F, 0x01, 0x09}
 uint8_t digit[] = {0x08, 0x04, 0x02, 0x01}; //자릿수 선택 
 uint8_t num_digits[4];
 uint8_t cnt = 0;
+uint8_t previous_cnt=0;
 
 //16비트 프로토콜 만드는 함수
 // 입력: 몇 번째 자리에 출력할지, 어떤 숫자 출력할지
@@ -29,27 +30,51 @@ void Init_74595(void) {
 	DDRC |= (1 << SER) | (1 << SCK) ; //SER,SCK 와 연결된 atmeag328p의 핀을 출력으로 설정
 	DDRB |= (1 << RCK); // RCK와 연결된 atmeag328p의 핀을 출력으로 설정
 }
-//timer0 초기화 및 74595랑 연결된 atmega328p의 핀 초기화
+
+//timer0 초기화 및 74595랑 연결된 atmega328p의 핀 초기화 -> 7세그먼트 쓰려면 이 함수 호출하면됩니다.
 void init_7_segment() {
 	timer1_init(); //타이머0 활성화
 	Init_74595(); //74595랑 연결된 atmega328p의 핀 초기화
 }
 
 // 타이머 0 오버플로 인터럽트 활성화 + timer0_millis 와 timer0_micros가 업데이트되기 시작함 + cnt 가 1됨
+// 이 함수호출하면 카운트 시작
 void count_on_7_segment() {
 	timer1_count_start();
 	cnt=1;
 }
 
+
 // 타이머0 오버플로 인터럽트 비활성화 + timer0_millis 와 timer0_micros 전부 0으로 초기화 + cnt 가 0 됨
-void idle_7_segment() {
+// 이 함수 호출하면 카운트 중지
+void count_off_7_segment() {
 	timer1_count_end(); 
 	cnt=0;
 }
 
 
 //init_7_segment() 호출하고나서 메인 이벤트 내부에서 써야하는 함수
-void work_7_segment() {
+void print_7_segment() {
+	
+	//previous_cnt가 0을 유지하다가 cnt=1이 들어온순간
+	if(cnt == 1 && previous_cnt == 0) {
+		static uint8_t _3sec_counter = 3; //첫 선언문 실행시에만 초기화됨
+		if(is_1sec_passed () && cnt) {
+			_3sec_counter--;
+		}
+		WordDataWrite(make_16bit_protocol(3,_3sec_counter));
+		_delay_ms(SEGMENT_DELAY);
+		if(_3sec_counter == 0) {
+			_3sec_counter = 3;
+			previous_cnt = cnt;
+			min = 0;
+		}
+		return;
+	}
+	previous_cnt = cnt;
+
+
+	//
 	if(is_1sec_passed () && cnt) { //1초 지났는지 + cnt가 1인지 check
 		num_digits[0] = min / 60 / 10; //시간의 십의 자리
 		num_digits[1] = min / 60 % 10; // 시간의 일의 자리

@@ -30,8 +30,8 @@ void WordDataWrite(uint16_t data);
 uint16_t make_16bit_protocol (uint8_t digit_num, uint8_t num);
 void init_7_segment();
 void count_on_7_segment();
-void idle_7_segment();
-void work_7_segment();
+void count_off_7_segment();
+void print_7_segment();
 
 
 
