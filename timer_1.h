@@ -21,15 +21,15 @@
 #define CLOCKS_PER_MICRO ( F_CPU / 1000000L ) 
 //매크로 함수. 클럭수를 인자로 전달하면, 해당 클럭이 총 몇 마이크로초인지 반환해준다. 시스템 클럭이 16Mhz 일때를 기준으로 만들어진 매크로함수이다.
 #define CLOCKS_TO_MICROSECONDS(a) ( (a) / CLOCKS_PER_MICRO )  
-// Timer1의 분주비가 1024이다 -> 클럭 주파수가 1/1024 배되므로, 초당 입력되는 펄스의 수가 기존(16Mhz기준)의 1/1024배된다.
-// 이는 카운터 입장에서 같은 수의 클럭을 셀 때, 시스템 클럭을 16Mhz로 그대로 쓰면서 펄스를 1024배로 세야한다.
-// 따라서 단순히 256이 아니라 256*64를 전달해야 오버플로 인터럽트 발생까지
+// Timer1의 분주비가 64이다 -> 클럭 주파수가 1/64 배되므로, 초당 입력되는 펄스의 수가 기존(16Mhz기준)의 1/64배된다.
+// 이는 카운터 입장에서 같은 수의 클럭을 셀 때, 시스템 클럭을 16Mhz로 그대로 쓰면서 펄스를 64배로 세는것과 동일하다.
+// 따라서 단순히 65536이 아니라 64*65536을 전달해야 오버플로 인터럽트 발생까지
 // 몇 마이크로초 걸리는지를 반환해준다.
-#define MICROSECONDS_PER_TIMER1_OVERFLOW ( CLOCKS_TO_MICROSECONDS(1024*65536))
+#define MICROSECONDS_PER_TIMER1_OVERFLOW ( CLOCKS_TO_MICROSECONDS(64*65536))
 // 오버플로 인터럽트 발생까지 몇 밀리초 걸리는지 (밀리 단위 몫 느김)
-#define MILLIS_INCREMENT_PER_OVERFLOW ( MICROSECONDS_PER_TIMER0_OVERFLOW / 1000 ) 
+#define MILLIS_INCREMENT_PER_OVERFLOW ( MICROSECONDS_PER_TIMER1_OVERFLOW / 1000 ) 
 // 오버플로 인터럽트 발생까지 밀리초 단위 증가 제외하고 남은 마이크로초 단위 (마이크로단위의 아주작은 나머지 느낌)
-#define MICROS_INCREMENT_PER_OVERFLOW ( MICROSECONDS_PER_TIMER0_OVERFLOW % 1000 ) 
+#define MICROS_INCREMENT_PER_OVERFLOW ( MICROSECONDS_PER_TIMER1_OVERFLOW % 1000 ) 
 //프로그램 시작 이후 경과시간을 외부에서 쓸 수 있도록 extern 으로 선언
 extern volatile unsigned long timer1_millis; //
 extern volatile int timer1_micros;
