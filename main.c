@@ -9,7 +9,7 @@
 #include <util/delay.h>
 #include "common.h"
 #include "UART.h"
-#include "timer_0.h"
+#include "timer_1.h"
 #include "_7_segment.h"
 
 
@@ -19,8 +19,8 @@
 int main(void) {
 	UART_INIT();
 	init_7_segment(); //타이머0 활성화 및 74595와 연결된 atmeag328p의 핀 설정
-	idle_7_segment(); //
-	count_on_7_segment(); //타이머0 오버플로 인터럽트 활성화 및 previous time을 millis()로 설정 및 cnt를 1로 설정
+	idle_7_segment(); //타이머0 비활성화 -> 0만 출력.
+	count_on_7_segment(); //타이머1 오버플로 인터럽트 활성화 및 previous time을 millis()로 설정 및 cnt를 1로 설정
 	
 	while(1) {
 		

@@ -16,6 +16,7 @@ uint8_t cnt = 0;
 // 입력: 몇 번째 자리에 출력할지, 어떤 숫자 출력할지
 uint16_t make_16bit_protocol (uint8_t digit_num_minus_one, uint8_t num) {
 	uint16_t protocol_16bit = combine_uint8(digit[digit_num_minus_one], pattern[num]);
+	if(digit_num_minus_one == 1) protocol_16bit &= ~(1 << 0);
 	return protocol_16bit;
 }
 
@@ -30,19 +31,19 @@ void Init_74595(void) {
 }
 //timer0 초기화 및 74595랑 연결된 atmega328p의 핀 초기화
 void init_7_segment() {
-	timer0_init(); //타이머0 활성화
+	timer1_init(); //타이머0 활성화
 	Init_74595(); //74595랑 연결된 atmega328p의 핀 초기화
 }
 
 // 타이머 0 오버플로 인터럽트 활성화 + timer0_millis 와 timer0_micros가 업데이트되기 시작함 + cnt 가 1됨
 void count_on_7_segment() {
-	timer0_count_start();
+	timer1_count_start();
 	cnt=1;
 }
 
 // 타이머0 오버플로 인터럽트 비활성화 + timer0_millis 와 timer0_micros 전부 0으로 초기화 + cnt 가 0 됨
 void idle_7_segment() {
-	timer0_count_end(); 
+	timer1_count_end(); 
 	cnt=0;
 }
 
