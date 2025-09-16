@@ -9,6 +9,8 @@ void motor_dc_init(void);
 void motor_dc_start(uint8_t duty);
 void motor_dc_stop(void);
 void motor_dc_control(Button_t pressed);
+void motor_setup(void);
+uint8_t level_setup(uint8_t level);
 
 #define LEVEL_MIN 1
 #define LEVEL_MAX 5
@@ -34,5 +36,6 @@ static inline uint8_t output_pwm(uint8_t level){
 
 static inline uint8_t output_deg(uint8_t level){
     return AngleDeg[clamp_level(level)];
+}
 
 #endif
