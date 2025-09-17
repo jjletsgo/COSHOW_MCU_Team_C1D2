@@ -38,7 +38,6 @@ void Button_Init(void);                           // 초기화
 
 
 // 각 버튼에 대한 레벨을 저장하기 위한 함수 부분
-uint8_t level_setup(uint8_t level);
 
 #define LEVEL_MIN 1 // 최소레벨 1
 #define LEVEL_MAX 5 // 최대레벨 5
@@ -69,5 +68,9 @@ static inline uint8_t output_deg(uint8_t level){
     return AngleDeg[clamp_level(level)];
 }
 
+//level -> pwm 변환 함수
+uint8_t level_setup(uint8_t level){
+	 return output_pwm(level);
+}
 
 #endif /* BUTTON_H_ */

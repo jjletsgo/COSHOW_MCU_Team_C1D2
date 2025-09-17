@@ -13,6 +13,10 @@
 static volatile step_mode_t g_mode = STEP_HALF_STEP;
 static volatile uint16_t g_delay_us = 2000;
 
+const uint8_t AngleDeg[LEVEL_MAX + 1] = ANGLE_TABLE;
+volatile uint8_t angle_level = 0;
+volatile uint8_t value = 0;
+
 static const uint8_t FULL_SEQ[4] = {
 	(1<<IN1),
 	(1<<IN2),
