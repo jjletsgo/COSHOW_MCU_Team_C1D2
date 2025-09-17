@@ -39,6 +39,8 @@ int main(void) {
 		//_delay_ms(200);
 		Button_t pressed = Button_ADC_getPressed(adc_value); //폴링으로 눌린 버튼을 저장
 		//UART_print8bitNumber(pressed);
+
+		//해당 switch문에는 각 버튼 입력에따라 분기해서 수행할 동작을 넣어주세요.
 		if (pressed != BUTTON_NONE) { // 버튼 1개라도 눌리면 실행됨. 버튼 안눌리면 실행 x
 			switch(pressed) {
 				case BUTTON_SPEED_UP:UART_print8bitNumber(pressed);
@@ -56,10 +58,10 @@ int main(void) {
 				case BUTTON_ON_OFF:
 					UART_printString("BUTTON_ON_OFF is pushed\n");
 					if(current_state == IDLE) {
-						current_state = RUNNING;
+						current_state = RUNNING; //상태를 RUNNING으로 변경
 						timer1_count_start();
 					} else if (current_state == RUNNING) {
-						current_state = IDLE;
+						current_state = IDLE; // 상태를 IDLE로 변경
 						count_off_7_segment();
 					}
 				
@@ -71,6 +73,7 @@ int main(void) {
 		}
 
 		//////////// FSM 상태에 따른 분기
+		////해당 switch문에는 각 FSM 상태에따라 분기해서 수행할 동작을 넣어주세요.
 		switch(current_state) {
 			case IDLE :
 			
