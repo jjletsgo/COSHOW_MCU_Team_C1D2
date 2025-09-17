@@ -57,11 +57,14 @@ void print_7_segment() {
 	int i = 0;
 	if(current_state == RUNNING && previous_state == IDLE) {
 		static uint8_t _3sec_counter = 3; //첫 선언문 실행시에만 초기화됨
-		if(is_1sec_passed () && current_state == RUNNING) {
+		if(is_1sec_passed () && current_state == RUNNING) { //1초지날떄마다 한 번 씩 호출
 			_3sec_counter--;
+			WordDataWrite(make_16bit_protocol(3,_3sec_counter) | (1 << BUZZER)); //1초마다 부저로 소리내기
+		_	delay_ms(SEGMENT_DELAY);
+		} else { // 초기화 단계 - 평상시에 호출
+			WordDataWrite(make_16bit_protocol(3,_3sec_counter));
+		    _delay_ms(SEGMENT_DELAY);
 		}
-		WordDataWrite(make_16bit_protocol(3,_3sec_counter));
-		_delay_ms(SEGMENT_DELAY);
 		if(_3sec_counter == 0) {
 			_3sec_counter = 3;
 			previous_state = current_state; //이 때 previous_state가 RUNNING으로 바뀜
@@ -76,7 +79,7 @@ void print_7_segment() {
 		
 		case IDLE:
 			for(i=0; i<4; i++) {
-			WordDataWrite(make_16bit_protocol(i,0) | (1 << 12) | (1 << 14)); //74HC595로 1,2,3,4 자리에 0 출력하도록하는 프로토콜 전송, 초록불(12,14를 1로)
+			WordDataWrite(make_16bit_protocol(i,0) | (1 << RED) | (1 << BLUE)); //74HC595로 1,2,3,4 자리에 0 출력하도록하는 프로토콜 전송, 초록불(12,14를 1로)
 			_delay_ms(SEGMENT_DELAY);
 			}
 			
@@ -91,7 +94,7 @@ void print_7_segment() {
 			} 
 		
 			for(i=0; i<4; i++)  { //1초 지나기전가지 num_digit이 그대로 남아있다
-			WordDataWrite(make_16bit_protocol(i,num_digits[i]) | (1 << 12) | (1 << 13)); //74HC595로 16비트 데이터 전송(SER,SCK 16번 반복후 RCK도 쏴준다. 즉 7-segment에 병렬로 출력까지한다)
+			WordDataWrite(make_16bit_protocol(i,num_digits[i]) | (1 << RED) | (1 << GREEN)); //74HC595로 16비트 데이터 전송(SER,SCK 16번 반복후 RCK도 쏴준다. 즉 7-segment에 병렬로 출력까지한다)
 			// 파란색 -> 12,13을 1로
 			_delay_ms(SEGMENT_DELAY);
 			}

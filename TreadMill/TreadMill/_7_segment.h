@@ -22,6 +22,10 @@
 #define SCK 1
 #define RCK 0
 #define SEGMENT_DELAY 6// 7세그먼트 한 자리 표시마다 딜레이
+#define RED 12
+#define GREEN 13
+#define BLUE 14
+#define BUZZER 15
 
 void Init_74595(void);
 void ShiftClock(void);
