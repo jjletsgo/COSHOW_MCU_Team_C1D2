@@ -60,7 +60,7 @@ void print_7_segment() {
 		if(is_1sec_passed () && current_state == RUNNING) { //1초지날떄마다 한 번 씩 호출
 			_3sec_counter--;
 			WordDataWrite(make_16bit_protocol(3,_3sec_counter) | (1 << BUZZER)); //1초마다 부저로 소리내기
-		_	delay_ms(SEGMENT_DELAY);
+			_delay_ms(SEGMENT_DELAY);
 		} else { // 초기화 단계 - 평상시에 호출
 			WordDataWrite(make_16bit_protocol(3,_3sec_counter));
 		    _delay_ms(SEGMENT_DELAY);
