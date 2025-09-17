@@ -66,7 +66,7 @@ void print_7_segment() {
 			_3sec_counter = 3;
 			previous_state = current_state; //이 때 previous_state가 RUNNING으로 바뀜
 			min = 0;
-			for(i=0;i<4;i++) num_digits[i]=0;
+			for(i=0;i<4;i++) num_digits[i]=0; //RUNNING으로 바뀌기 전에 이전 RUNNING 단계에 사용된 num_digits을 0으로 초기화해준다.
 		}
 		return;
 		}
