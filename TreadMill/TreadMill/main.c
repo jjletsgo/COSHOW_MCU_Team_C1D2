@@ -42,19 +42,19 @@ int main(void) {
 		if (pressed != BUTTON_NONE) { // 버튼 1개라도 눌리면 실행됨. 버튼 안눌리면 실행 x
 			switch(pressed) {
 				case BUTTON_SPEED_UP:UART_print8bitNumber(pressed);
-					UART_printString("Button 1 is pushed\n");
+					UART_printString("BUTTON_SPPED_UP is pushed\n");
 					break;
 				case BUTTON_SPEED_DOWN:
-					UART_printString("Button 2 is pushed\n");
+					UART_printString("BUTTON_SPPED_DOWN is pushed\n");
 					break;
 				case BUTTON_ANGLE_UP:
-					UART_printString("Button 3 is pushed\n");
+					UART_printString("BUTTON_ANGLE_UP is pushed\n");
 					break;
 				case BUTTON_ANGLE_DOWN:
-					UART_printString("Button 4 is pushed\n");
+					UART_printString("BUTTON_ANGLE_DOWN is pushed\n");
 					break;
 				case BUTTON_ON_OFF:
-					UART_printString("Button 5 is pushed\n");
+					UART_printString("BUTTON_ON_OFF is pushed\n");
 					if(current_state == IDLE) {
 						current_state = RUNNING;
 						timer1_count_start();
