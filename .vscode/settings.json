@@ -1,0 +1,10 @@
+{
+    "files.associations": {
+        "*.py": "python",
+        "74hc595_d1c2.h": "c",
+        "common.h": "c",
+        "timer_0.h": "c",
+        "stdint.h": "c",
+        "uart.h": "c"
+    }
+}
