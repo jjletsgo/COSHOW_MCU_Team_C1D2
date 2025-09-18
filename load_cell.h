@@ -26,5 +26,6 @@
 void load_cell_init(void);
 int32_t load_cell_read(void);
 float load_cell_convert(int32_t raw);
+bool load_cell_status(float data);
 
 #endif // LOAD_CELL_H
