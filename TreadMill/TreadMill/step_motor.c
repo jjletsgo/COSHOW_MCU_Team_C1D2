@@ -1,21 +1,22 @@
-#define F_CPU 16000000UL
-
-#include <avr/io.h>
+#include "board.h"
 #include <util/delay.h>
 #include "Step_motor.h"
+#include "button.h"
 
 #define IN1 PD4
 #define IN2 PD5
 #define IN3 PD6
 #define IN4 PD7
 #define COIL_MASK ((1<<IN1)|(1<<IN2)|(1<<IN3)|(1<<IN4))
+#define STEP_ANGLE 128
 
 static volatile step_mode_t g_mode = STEP_HALF_STEP;
 static volatile uint16_t g_delay_us = 2000;
 
-const uint8_t AngleDeg[LEVEL_MAX + 1] = ANGLE_TABLE;
 volatile uint8_t angle_level = 0;
 volatile uint8_t value = 0;
+volatile int32_t steps = 0;
+volatile bool turn_off = false;
 
 static const uint8_t FULL_SEQ[4] = {
 	(1<<IN1),
@@ -40,7 +41,7 @@ static inline void coils_write(uint8_t mask)
 	PORTD = (PORTD & ~COIL_MASK) | (mask & COIL_MASK);
 }
 
-void step_init(step_mode_t mode)
+void motor_step_init(step_mode_t mode)
 {
 	DDRD |= COIL_MASK;
 	g_mode = mode;
@@ -65,16 +66,29 @@ void step_set_speed_rpm(uint16_t rpm)
 	g_delay_us = (uint16_t)interval_us;
 }
 
-void step_step(int32_t steps, step_dir_t dir)
+void motor_step_change(uint8_t level, step_dir_t dir)
 {
-	if (steps == 0) return;
-
+	if (turn_off == true){
+		steps = level * STEP_ANGLE;
+	}
+	else if (level == clamp_level(level)){
+		steps = STEP_ANGLE;
+	}
+	else if (level != clamp_level(level)){
+		steps = 0;
+		return;
+	}
+	else
+		steps = 0;
+		return;
+	
 	const uint8_t *seq;
 	uint8_t seq_len;
 
 	if (g_mode == STEP_HALF_STEP) {
 		seq = HALF_SEQ; seq_len = 8;
-		} else {
+	} 
+	else {
 		seq = FULL_SEQ; seq_len = 4;
 	}
 
@@ -84,7 +98,8 @@ void step_step(int32_t steps, step_dir_t dir)
 	while (count--) {
 		if (dir == STEP_CW) {
 			idx++; if (idx >= (int8_t)seq_len) idx = 0;
-			} else {
+			} 
+		else {
 			idx--; if (idx < 0) idx = (int8_t)seq_len - 1;
 		}
 
@@ -102,7 +117,37 @@ void step_step(int32_t steps, step_dir_t dir)
 	}
 }
 
-void step_release(void)
-{
+void step_release(void){
 	coils_write(0);
+}
+
+void motor_step_stop(void){
+	turn_off = true;
+	motor_step_change(angle_level, STEP_DOWN);
+	turn_off = false;
+}
+
+void motor_step_control(Button_t pressed){
+
+	step_set_speed_rpm(10);         
+
+	switch(pressed){
+
+		case BUTTON_ANGLE_UP:
+			angle_level++;
+			motor_step_change(angle_level, STEP_UP);
+			break;
+
+		case BUTTON_ANGLE_DOWN:
+			angle_level--;
+			motor_step_change(angle_level, STEP_DOWN);
+			break;
+
+		case BUTTON_ON_OFF:
+			motor_step_stop();
+			break;
+
+		default:
+			break;
+	}
 }

@@ -43,13 +43,11 @@ void Button_Init(void);                           // 초기화
 #define LEVEL_MAX 5 // 최대레벨 5
 
 #define SPEED_TABLE {0, 40, 45, 50, 55, 60} // Level 값과 동일화하기 위해서 index 0은 미사용
-#define ANGLE_TABLE {0, } // 아직 정확한 각도를 정하지 못해서 비워둠
 
 extern volatile uint8_t speed_level; // 사용하고자 하는 c 코드에서 초기화 필요, 속도 레벨(1~5)
 extern volatile uint8_t angle_level; // 사용하고자 하는 c 코드에서 초기화 필요, 기울기 레벨(1~5)
 
 extern const uint8_t SpeedPwm[LEVEL_MAX + 1]; //사용하고자 하는 c 코드에서 위의 SPEED_TABLE 불러와서 리스트로 정의
-extern const uint8_t AngleDeg[LEVEL_MAX + 1]; //사용하고자 하는 c 코드에서 위의 ANGLE_TABLE 불러와서 리스트로 정의
 
 // 최소, 최대 레벨 제한
 static inline uint8_t clamp_level(uint8_t level){
@@ -63,13 +61,8 @@ static inline uint8_t output_pwm(uint8_t level){
     return SpeedPwm[clamp_level(level)];
 }
 
-// 레벨값을 deg 값으로 변환
-static inline uint8_t output_deg(uint8_t level){
-    return AngleDeg[clamp_level(level)];
-}
-
 //level -> pwm 변환 함수
-uint8_t level_setup(uint8_t level){
+uint8_t pwm_setup(uint8_t level){
 	 return output_pwm(level);
 }
 

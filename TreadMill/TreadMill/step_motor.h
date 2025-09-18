@@ -10,14 +10,15 @@ typedef enum {
 } step_mode_t;
 
 typedef enum {
-	STEP_CW  = 0,          
-	STEP_CCW = 1          
+	STEP_UP  = 0,          
+	STEP_DOWN = 1          
 } step_dir_t;
 
-void step_init(step_mode_t mode);
+void motor_step_init(step_mode_t mode);
 void step_set_mode(step_mode_t mode);
 void step_set_speed_rpm(uint16_t rpm);   
-void step_step(int32_t steps, step_dir_t dir); 
+void motor_step_change(int32_t steps, step_dir_t dir); 
 void step_release(void);              
-void step_motor_control(void); 
+void motor_step_control(Button_t pressed);
+void motor_step_stop(void);
 #endif

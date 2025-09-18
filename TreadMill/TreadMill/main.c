@@ -72,6 +72,8 @@ int main(void) {
 			}
 		}
 
+		// step_init(STEP_HALF_STEP); 스텝모터는 8상으로 작동시킴   
+
 		//////////// FSM 상태에 따른 분기
 		////해당 switch문에는 각 FSM 상태에따라 분기해서 수행할 동작을 넣어주세요.
 		switch(current_state) {
