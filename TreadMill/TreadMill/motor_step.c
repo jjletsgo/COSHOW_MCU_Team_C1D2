@@ -2,6 +2,7 @@
 #include <util/delay.h>
 #include "motor_step.h"
 #include "button.h"
+#include <stdbool.h>
 
 #define IN1 PD4
 #define IN2 PD5
@@ -96,7 +97,7 @@ void motor_step_change(uint8_t level, step_dir_t dir)
 	int8_t idx = 0;
 
 	while (count--) {
-		if (dir == STEP_CW) {
+		if (dir == STEP_UP) {
 			idx++; if (idx >= (int8_t)seq_len) idx = 0;
 			} 
 		else {

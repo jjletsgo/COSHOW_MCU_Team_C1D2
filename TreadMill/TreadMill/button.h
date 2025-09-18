@@ -62,7 +62,7 @@ static inline uint8_t output_pwm(uint8_t level){
 }
 
 //level -> pwm 변환 함수
-uint8_t pwm_setup(uint8_t level){
+static inline uint8_t pwm_setup(uint8_t level){
 	 return output_pwm(level);
 }
 

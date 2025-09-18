@@ -10,7 +10,7 @@ ISR(INT1_vect)
 	hall_count++;
 }
 
-ISR(TIMER2_COMPA_vect)
+ISR(TIMER1_COMPA_vect)
 {
 	if (++timer_ms >= 1000) {
 		timer_ms = 0;

@@ -13,7 +13,7 @@
 #include "button.h"
 #include "motor_dc.h"
 #include "motor_step.h"
-
+#include "encoder.h"
 //UART_INIT(), init_7_segment() 는 main에서 해주고 count_on_7_segment()랑 idle_7_segment() 는 버튼 입력에따라 메인 루프에서 호출해주면됩니다.
 
 int main(void) {
@@ -21,6 +21,10 @@ int main(void) {
 	Button_Init();
 	ADC_init();
 	ADC_select_channel(2);
+	motor_dc_init();
+	motor_step_init(STEP_HALF_STEP);
+	encoder_init();
+	timer2_init();
 	init_7_segment(); //타이머0 활성화 및 74595와 연결된 atmeag328p의 핀 설정
 	//count_off_7_segment(); //타이머1 비활성화 -> 0만 출력.
 	//count_on_7_segment(); //타이머1 오버플로 인터럽트 활성화 및 previous time을 millis()로 설정 및 cnt를 1로 설정
@@ -42,7 +46,7 @@ int main(void) {
 		//해당 switch문에는 각 버튼 입력에따라 분기해서 수행할 동작을 넣어주세요.
 		if (pressed != BUTTON_NONE) { // 버튼 1개라도 눌리면 실행됨. 버튼 안눌리면 실행 x
 			switch(pressed) {
-				case BUTTON_SPEED_UP:UART_print8bitNumber(pressed);
+				case BUTTON_SPEED_UP:
 					UART_printString("BUTTON_SPPED_UP is pushed\n");
 					motor_dc_up();
 					break;
@@ -81,12 +85,11 @@ int main(void) {
 		////해당 switch문에는 각 FSM 상태에따라 분기해서 수행할 동작을 넣어주세요.
 		switch(current_state) {
 			case IDLE :
-			
+				motor_dc_stop();
 			
 				break;
 			case RUNNING :
-				
-			
+				motor_dc_setup();
 			break;
 			case EMERGENCY_STOP :
 			
