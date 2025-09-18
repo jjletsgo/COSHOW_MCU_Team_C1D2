@@ -11,14 +11,20 @@ volatile uint8_t duty = 0;
 // dc 모터 초기화
 void motor_dc_init(void)
 {
-    DDRB  |= (1 << PB3);  
-    TCCR2A = 0; TCCR2B = 0;
+    DDRB  |= (1 << PB3);        // PB3 = OC2A 출력
+    TCCR2A = 0;
+    TCCR2B = 0;
 
-    TCCR2A |= (1 << WGM21) | (1 << WGM20);   // Fast PWM
-    TCCR2A |= (1 << COM2A1);                // OC2A 비반전 모드
-    TCCR2B |= (1 << CS22);                   // 분주비 64
-    
-    OCR2A = 0;
+    // Fast PWM 모드, TOP=0xFF (OCR2A는 duty 레지스터로만 사용)
+    TCCR2A |= (1 << WGM21) | (1 << WGM20);
+    TCCR2B &= ~(1 << WGM22);
+
+    // OC2A 비반전 모드
+    TCCR2A |= (1 << COM2A1);
+    // 분주비 64
+    TCCR2B |= (1 << CS22);
+
+    OCR2A = 0;   // 듀티 0% 시작
 }
 
 
@@ -30,31 +36,33 @@ void motor_dc_setup(void){
 
 
 // level 입력받아 pwm 출력
-void motor_dc_start(uint8_t speed_level)  
+void motor_dc_start(uint8_t speed_level)
 {
-    uint8_t pwm = pwm_setup(speed_level);
-    OCR2A = pwm;
+	uint8_t pwm = pwm_setup(speed_level);
+	OCR2A = pwm;
 }
 
 
 // dc 모터 정지
 void motor_dc_stop(void)
 {
-    speed_level = 0;
-    OCR2A = 0;
-    TCCR2A &= ~(1 << COM2A1);
-    PORTB  &= ~(1 << PB3);
+	speed_level = 0;
+	OCR2A = 0;
+	TCCR2A &= ~(1 << COM2A1);
+	PORTB  &= ~(1 << PB3);
 }
 
 
 void motor_dc_up(void){
-    speed_level++;
-    motor_dc_start(speed_level);
+	if (speed_level < LEVEL_MAX) 
+		speed_level++;
+	motor_dc_start(speed_level);
 }
 
 void motor_dc_down(void){
-    speed_level--;
-    motor_dc_start(speed_level);
+	if (speed_level > LEVEL_MIN) 
+		speed_level--;
+	motor_dc_start(speed_level);
 }
 
 

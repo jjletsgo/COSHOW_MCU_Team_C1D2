@@ -1,13 +1,13 @@
+
 #include "common.h"
 #include <util/delay.h>
 #include "motor_step.h"
 #include "button.h"
 #include <stdbool.h>
-
-#define IN1 PD4
-#define IN2 PD5
-#define IN3 PD6
-#define IN4 PD7
+#define IN4 PD4
+#define IN3 PD5
+#define IN2 PD6
+#define IN1 PD7
 #define COIL_MASK ((1<<IN1)|(1<<IN2)|(1<<IN3)|(1<<IN4))
 #define STEP_ANGLE 128
 
@@ -58,10 +58,10 @@ void step_set_speed_rpm(uint16_t rpm)
 {
 	if (rpm == 0) { g_delay_us = 0xFFFF; return; }
 
-	uint32_t spr = (g_mode == STEP_HALF_STEP) ? 4096UL : 2048UL; 
+	uint32_t spr = (g_mode == STEP_HALF_STEP) ? 4096UL : 2048UL;
 	uint32_t interval_us = 60000000UL / ((uint32_t)rpm * spr);
 
-	if (interval_us < 800UL)     interval_us = 800UL;    
+	if (interval_us < 800UL)     interval_us = 800UL;
 	if (interval_us > 50000UL)   interval_us = 50000UL;
 
 	g_delay_us = (uint16_t)interval_us;
@@ -72,23 +72,22 @@ void motor_step_change(uint8_t level, step_dir_t dir)
 	if (turn_off == true){
 		steps = level * STEP_ANGLE;
 	}
-	else if (level == clamp_level(level)){
+	else if (1 <= level && level <= 5){
 		steps = STEP_ANGLE;
 	}
-	else if (level != clamp_level(level)){
+	else {
 		steps = 0;
 		return;
 	}
-	else
-		steps = 0;
-		return;
+
+
 	
 	const uint8_t *seq;
 	uint8_t seq_len;
 
 	if (g_mode == STEP_HALF_STEP) {
 		seq = HALF_SEQ; seq_len = 8;
-	} 
+	}
 	else {
 		seq = FULL_SEQ; seq_len = 4;
 	}
@@ -99,7 +98,7 @@ void motor_step_change(uint8_t level, step_dir_t dir)
 	while (count--) {
 		if (dir == STEP_UP) {
 			idx++; if (idx >= (int8_t)seq_len) idx = 0;
-			} 
+		}
 		else {
 			idx--; if (idx < 0) idx = (int8_t)seq_len - 1;
 		}
@@ -108,8 +107,8 @@ void motor_step_change(uint8_t level, step_dir_t dir)
 
 		uint16_t remain = g_delay_us;
 
-		while (remain >= 1000) {   
-			_delay_ms(1);          
+		while (remain >= 1000) {
+			_delay_ms(1);
 			remain -= 1000;
 		}
 		while (remain--) {
@@ -129,15 +128,16 @@ void motor_step_stop(void){
 }
 
 void motor_step_up(void){
-	step_set_speed_rpm(10);         
+	step_set_speed_rpm(10);
+	if (angle_level < LEVEL_MAX)
 	angle_level++;
 	motor_step_change(angle_level, STEP_UP);
 }
 
 void motor_step_down(void){
-	step_set_speed_rpm(10);         
+	step_set_speed_rpm(10);
+	if (angle_level > LEVEL_MIN)
 	angle_level--;
 	motor_step_change(angle_level, STEP_DOWN);
 
 }
-
