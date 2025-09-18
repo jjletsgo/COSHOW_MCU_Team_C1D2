@@ -1,6 +1,6 @@
 #include "board.h"
 #include <util/delay.h>
-#include "Step_motor.h"
+#include "motor_step.h"
 #include "button.h"
 
 #define IN1 PD4
