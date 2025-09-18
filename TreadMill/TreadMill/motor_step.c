@@ -1,4 +1,4 @@
-#include "board.h"
+#include "common.h"
 #include <util/delay.h>
 #include "motor_step.h"
 #include "button.h"
@@ -127,27 +127,16 @@ void motor_step_stop(void){
 	turn_off = false;
 }
 
-void motor_step_control(Button_t pressed){
-
+void motor_step_up(void){
 	step_set_speed_rpm(10);         
-
-	switch(pressed){
-
-		case BUTTON_ANGLE_UP:
-			angle_level++;
-			motor_step_change(angle_level, STEP_UP);
-			break;
-
-		case BUTTON_ANGLE_DOWN:
-			angle_level--;
-			motor_step_change(angle_level, STEP_DOWN);
-			break;
-
-		case BUTTON_ON_OFF:
-			motor_step_stop();
-			break;
-
-		default:
-			break;
-	}
+	angle_level++;
+	motor_step_change(angle_level, STEP_UP);
 }
+
+void motor_step_down(void){
+	step_set_speed_rpm(10);         
+	angle_level--;
+	motor_step_change(angle_level, STEP_DOWN);
+
+}
+

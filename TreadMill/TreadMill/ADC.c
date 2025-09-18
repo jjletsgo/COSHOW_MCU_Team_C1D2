@@ -1,5 +1,5 @@
 ﻿
-#include "board.h"
+#include "common.h"
 #include "ADC.h"
 #include <util/delay.h>
 

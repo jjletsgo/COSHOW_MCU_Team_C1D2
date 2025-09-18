@@ -1,7 +1,6 @@
-#define F_CPU 16000000UL
-#include <avr/io.h>
+#include "common.h"
 #include <avr/interrupt.h>
-#include "Hall_Sensor.h"
+#include "encoder.h"
 
 static volatile uint32_t hall_count = 0;   
 static volatile uint16_t timer_ms   = 0;   
@@ -18,7 +17,7 @@ ISR(TIMER2_COMPA_vect)
 	}
 }
 
-void hall_init(void)
+void encoder_init(void)
 {
 	DDRD  &= ~(1 << PD3);
 	PORTD |=  (1 << PD3);
@@ -30,7 +29,7 @@ void hall_init(void)
 	EIMSK |=  (1 << INT1);  
 }
 
-void timer_init(void)
+void timer2_init(void)
 {
 	TCCR2A = (1 << WGM21);   
 	TCCR2B = (1 << CS22);     
@@ -40,7 +39,7 @@ void timer_init(void)
 	TIMSK2 |= (1 << OCIE2A);
 }
 
-uint32_t hall_read(void)
+uint32_t encoder_read(void)
 {
 	uint8_t s = SREG; cli();
 	uint32_t value = hall_count;
@@ -49,7 +48,7 @@ uint32_t hall_read(void)
 	return value;
 }
 
-uint16_t timer_read(void)
+uint16_t timer2_read(void)
 {
 	uint8_t s = SREG; cli();
 	uint16_t value = timer_ms;

@@ -4,16 +4,15 @@
  * Created: 2025-09-12 오후 4:27:33
  * Author : User
  */ 
-#define F_CPU 16000000UL
-#include <avr/io.h>
-#include <util/delay.h>
 #include "common.h"
+#include <util/delay.h>
 #include "UART.h"
 #include "timer_1.h"
 #include "_7_segment.h"
 #include "ADC.h"
 #include "button.h"
-
+#include "motor_dc.h"
+#include "motor_step.h"
 
 //UART_INIT(), init_7_segment() 는 main에서 해주고 count_on_7_segment()랑 idle_7_segment() 는 버튼 입력에따라 메인 루프에서 호출해주면됩니다.
 
@@ -45,15 +44,19 @@ int main(void) {
 			switch(pressed) {
 				case BUTTON_SPEED_UP:UART_print8bitNumber(pressed);
 					UART_printString("BUTTON_SPPED_UP is pushed\n");
+					motor_dc_up();
 					break;
 				case BUTTON_SPEED_DOWN:
 					UART_printString("BUTTON_SPPED_DOWN is pushed\n");
+					motor_dc_down();
 					break;
 				case BUTTON_ANGLE_UP:
 					UART_printString("BUTTON_ANGLE_UP is pushed\n");
+					motor_step_up();
 					break;
 				case BUTTON_ANGLE_DOWN:
 					UART_printString("BUTTON_ANGLE_DOWN is pushed\n");
+					motor_step_down();
 					break;
 				case BUTTON_ON_OFF:
 					UART_printString("BUTTON_ON_OFF is pushed\n");

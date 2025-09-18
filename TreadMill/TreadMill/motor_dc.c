@@ -1,4 +1,4 @@
-﻿#include "board.h"
+﻿#include "common.h"
 #include "motor_dc.h"
 #include "timer_1.h"
 #include "button.h"
@@ -44,33 +44,21 @@ void motor_dc_start(uint8_t speed_level)
 // dc 모터 정지
 void motor_dc_stop(void)
 {
+    speed_level = 0;
     OCR1B = 0;
     TCCR1A &= ~(1 << COM1B1);
     PORTB  &= ~(1 << PB2);
 }
 
 
-// 버튼 입력에 따른 dc모터 컨트롤
-void motor_dc_control(Button_t pressed){
-
-	switch(pressed){
-        case BUTTON_SPEED_UP:
-            speed_level++;
-            motor_dc_start(speed_level);
-            break;
-
-        case BUTTON_SPEED_DOWN:
-            speed_level--;
-            motor_dc_start(speed_level);
-            break;
-
-        case BUTTON_ON_OFF:
-            speed_level = 0;
-            motor_dc_stop();
-            break;
-        
-        default:
-            break;
-    }
+void motor_dc_up(void){
+    speed_level++;
+    motor_dc_start(speed_level);
 }
+
+void motor_dc_down(void){
+    speed_level--;
+    motor_dc_start(speed_level);
+}
+
 

@@ -8,7 +8,10 @@
 
 #ifndef COMMON_H_
 #define COMMON_H_
-#include <avr/io.h> 
+#define F_CPU 16000000L   
+#include <avr/io.h>
+#include <stdint.h>
+#include <stdio.h>
 
 uint16_t combine_uint8(uint8_t high, uint8_t low);
 typedef enum {
