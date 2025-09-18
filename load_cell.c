@@ -48,3 +48,10 @@ int32_t load_cell_read(void){
 float load_cell_convert(int32_t raw){
 	return ((float)raw) / WEIGHT_FACTOR;	
 }
+
+bool load_cell_status(float data){
+	if(data < 10.0 && data > -10.0){
+		return false;
+	}
+	else return true;
+}
