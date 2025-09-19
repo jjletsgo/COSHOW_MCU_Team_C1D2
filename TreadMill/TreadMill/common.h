@@ -8,8 +8,13 @@
 
 #ifndef COMMON_H_
 #define COMMON_H_
+
+#ifndef F_CPU
+#define F_CPU 16000000L
+#endif
+
 #include <avr/io.h> 
-#include "timer_1.h"
+#include "timer_0.h"
 
 uint16_t combine_uint8(uint8_t high, uint8_t low);
 typedef enum {

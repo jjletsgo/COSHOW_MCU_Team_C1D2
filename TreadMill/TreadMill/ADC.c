@@ -1,7 +1,5 @@
 ﻿
-#include "board.h"
 #include "ADC.h"
-#include <util/delay.h>
 
 void ADC_init(void) {
 	ADMUX |= 0x40; //0b01000000, 6번 비트를 1로 set한다. -> ADC의 기준 전압을 AVcc(5V)로 설정한다. 추가적으로 ADLAR 건들지않았으므로 현재 우측정렬인 상태

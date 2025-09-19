@@ -1,5 +1,5 @@
 ﻿/*
- * _7_segment.h
+ * _74595.h
  *
  * Created: 2025-09-12 오후 11:39:09
  *  Author: User
@@ -8,9 +8,9 @@
 
 
 
-#ifndef _7_SEGMENT_H_
-#define _7_SEGMENT_H_
-#include "timer_1.h"
+#ifndef _74595_H_
+#define _74595_H_
+#include "timer_0.h"
 #include <avr/io.h> 
 #include "common.h"
 #include "UART.h"
@@ -27,17 +27,15 @@
 #define BLUE 14
 #define BUZZER 15
 
-void Init_74595(void);
+void init_74595(void);
+void timer_reset_74595(void);
 void ShiftClock(void);
 void LatchClock(void);
 void WordDataWrite(uint16_t data);
 uint16_t make_16bit_protocol (uint8_t digit_num, uint8_t num);
-void init_7_segment();
-void count_on_7_segment();
-void count_off_7_segment();
 void print_7_segment();
 
 
 
 
-#endif /* _7_SEGMENT_H_ */
+#endif /* _74595_H_ */
