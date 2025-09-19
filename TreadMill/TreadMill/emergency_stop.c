@@ -12,8 +12,7 @@ void emergency_stop_init(void)
     PORTD |=  (1 << PD2);
 
     // 상승엣지에서만 감지
-    EICRA |=  (1 << ISC00);
-	EICRA &= ~(1 << ISC01);
+    EICRA = (EICRA & ~((1<<ISC01)|(1<<ISC00))) | (1<<ISC01) | (1<<ISC00);
 
     // pending flag 클리어 후 enable
     EIFR  |=  (1 << INTF0);
@@ -28,11 +27,6 @@ ISR(INT0_vect)
 
         motor_dc_stop();
         motor_step_stop();
-		current_state = IDLE;
+		curr
     }
-	elif (PIND & ~(1<<PD2)){
-		EIMSK &= ~(1 << INT0);
-		motor_dc_init();
-		motor_step_init();
-	}
 }
