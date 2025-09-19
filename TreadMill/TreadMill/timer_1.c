@@ -73,7 +73,7 @@ uint8_t _1_sec_checker () {
 7_segment 쪽에서는 인자로 0전달해주시고,
 hall_sensor 쪽에서는 인자로 1 전달해주시면 됩니다.
 */
-void is_1_sec_passed(uint8_t who_r_u) {
+uint8_t is_1_sec_passed(uint8_t who_r_u) {
 	if(_1_sec_checker ()) {
 		switch(who_r_u) {
 			case 0: //for 7_segment

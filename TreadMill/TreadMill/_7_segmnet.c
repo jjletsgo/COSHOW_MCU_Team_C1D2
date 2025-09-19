@@ -86,7 +86,7 @@ void print_7_segment() {
 			break;
 
 		case RUNNING:
-			if(is_1_sec_passed(0) () && current_state == RUNNING) { //1초 지났는지 + cnt가 1인지 check
+			if(is_1_sec_passed(0) && current_state == RUNNING) { //1초 지났는지 + cnt가 1인지 check
 				num_digits[0] = min / 60 / 10; //시간의 십의 자리 timer1.c의 extern 선언된 min에 직접 접근하여 값을 복사해옴
 				num_digits[1] = min / 60 % 10; // 시간의 일의 자리
 				num_digits[2] = (min % 60) / 10; //분의 십의 자리

@@ -46,5 +46,5 @@ void timer1_count_start();
 void timer1_count_end();
 uint8_t _1_sec_checker ();
 unsigned long millis();
-void is_1_sec_passed(uint8_t who_r_u);
+uint8_t is_1_sec_passed(uint8_t who_r_u);
 #endif /* TIMER_1_H_ */
