@@ -69,6 +69,8 @@ void step_set_speed_rpm(uint16_t rpm)
 
 void motor_step_change(uint8_t level, step_dir_t dir)
 {
+	level = clamp_level(level);
+	
 	if (turn_off == true){
 		steps = level * STEP_ANGLE;
 	}
@@ -80,8 +82,6 @@ void motor_step_change(uint8_t level, step_dir_t dir)
 		return;
 	}
 
-
-	
 	const uint8_t *seq;
 	uint8_t seq_len;
 
@@ -130,14 +130,14 @@ void motor_step_stop(void){
 void motor_step_up(void){
 	step_set_speed_rpm(10);
 	if (angle_level < LEVEL_MAX)
-	angle_level++;
+		angle_level++;
 	motor_step_change(angle_level, STEP_UP);
 }
 
 void motor_step_down(void){
 	step_set_speed_rpm(10);
 	if (angle_level > LEVEL_MIN)
-	angle_level--;
+		angle_level--;
 	motor_step_change(angle_level, STEP_DOWN);
 
 }
