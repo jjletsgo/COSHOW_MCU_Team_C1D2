@@ -57,7 +57,7 @@ void print_7_segment() {
 	int i = 0;
 	if(current_state == RUNNING && previous_state == IDLE) {
 		static uint8_t _3sec_counter = 3; //첫 선언문 실행시에만 초기화됨
-		if(is_1sec_passed () && current_state == RUNNING) { //1초지날떄마다 한 번 씩 호출
+		if(is_1_sec_passed(0) && current_state == RUNNING) { //1초지날떄마다 한 번 씩 호출
 			_3sec_counter--;
 			WordDataWrite(make_16bit_protocol(3,_3sec_counter) | (1 << BUZZER)); //1초마다 부저로 소리내기
 			_delay_ms(SEGMENT_DELAY);
@@ -86,8 +86,8 @@ void print_7_segment() {
 			break;
 
 		case RUNNING:
-			if(is_1sec_passed () && current_state == RUNNING) { //1초 지났는지 + cnt가 1인지 check
-				num_digits[0] = min / 60 / 10; //시간의 십의 자리
+			if(is_1_sec_passed(0) () && current_state == RUNNING) { //1초 지났는지 + cnt가 1인지 check
+				num_digits[0] = min / 60 / 10; //시간의 십의 자리 timer1.c의 extern 선언된 min에 직접 접근하여 값을 복사해옴
 				num_digits[1] = min / 60 % 10; // 시간의 일의 자리
 				num_digits[2] = (min % 60) / 10; //분의 십의 자리
 				num_digits[3] = (min % 60) % 10; //분의 일의 자리			

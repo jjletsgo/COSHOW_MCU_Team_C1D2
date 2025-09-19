@@ -9,6 +9,7 @@
 #ifndef COMMON_H_
 #define COMMON_H_
 #include <avr/io.h> 
+#include "timer_1.h"
 
 uint16_t combine_uint8(uint8_t high, uint8_t low);
 typedef enum {

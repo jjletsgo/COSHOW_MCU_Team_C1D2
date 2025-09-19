@@ -16,6 +16,7 @@
 #include <avr/io.h>
 #include <avr/interrupt.h>
 #include "UART.h"
+#include "common.h"
 
 //마이크로초당 클럭을 저장. 값은 16
 #define CLOCKS_PER_MICRO ( F_CPU / 1000000L ) 
@@ -43,6 +44,7 @@ void timer1_ovf_start();
 void timer1_ovf_end();
 void timer1_count_start();
 void timer1_count_end();
-uint8_t is_1sec_passed ();
+uint8_t _1_sec_checker ();
 unsigned long millis();
+void is_1_sec_passed(uint8_t who_r_u);
 #endif /* TIMER_1_H_ */

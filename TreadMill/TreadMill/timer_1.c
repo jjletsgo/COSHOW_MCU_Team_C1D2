@@ -12,9 +12,11 @@
 volatile unsigned long timer1_millis = 0; //누적 시간 (밀리 단위)
 volatile int timer1_micros = 0 ;// 누적 시간 (마이크로 단위. 찌거기로 사용)
 volatile int min = 0; // 누적 분
-//volatile uint8_t num_digits[4]; // 이건 7세그먼트쪽에서 쓰는게 맞을듯
 volatile unsigned long present_time = 0; //현재시간
 volatile unsigned long previous_time = 0; //과거시간
+
+volatile uint8_t _1s_checker_7_segment = 0;
+volatile uint8_t _1s_checker_hall_sensor = 0;
 
 //timer0 초기화
 void timer1_init() {
@@ -50,19 +52,45 @@ void timer1_count_end() {
 
 
 //메인루프에서 실행해야하는 함수 -> 매 반복마다 1초 지났는지 체크
-uint8_t is_1sec_passed () {
+uint8_t _1_sec_checker () {
 	present_time = millis();
 	//1초 경과 and cnt 플래그가 1이면 실행
-	if(present_time-previous_time >= 1000) //시연을 위해 1000ms=1초 로 설정
+	if(present_time-previous_time >= 1000) //시연을 위해 1000ms=1초 로 설정 -> 1초 지날때마다 실행되는 if문
 	{ //1초 경과시
 		previous_time = present_time; //이전 시간을 현재 시간으로 설정
 		min++;//1분 증가
 		//디버깅용, pc로 uart 송신
 		UART_printString("1sec_passed\n");
+		_1s_checker_7_segment = 1;
+		_1s_checker_hall_sensor = 1;
 		return 1;
 	} else {
 		return 0;
 	}
+}
+
+/*
+7_segment 쪽에서는 인자로 0전달해주시고,
+hall_sensor 쪽에서는 인자로 1 전달해주시면 됩니다.
+*/
+void is_1_sec_passed(uint8_t who_r_u) {
+	if(_1_sec_checker ()) {
+		switch(who_r_u) {
+			case 0: //for 7_segment
+				if(_1s_checker_7_segment) {
+					_1s_checker_7_segment = 0;
+					return 1;
+				} else return 0;
+				break;
+			case 1: //for hall_sensor
+				if(_1s_checker_hall_sensor) {
+					_1s_checker_hall_sensor = 0;
+					return 1;
+				} else return 0;
+				break;
+			}
+	}
+	
 }
 
 
