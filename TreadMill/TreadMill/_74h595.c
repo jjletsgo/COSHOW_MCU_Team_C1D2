@@ -4,7 +4,7 @@
  * Created: 2025-09-12 오후 11:36:43
  *  Author: User
  */ 
-#include "_74595.h"
+#include "_74h595.h"
 
 //비트패턴
 uint8_t pattern[] = {0x03, 0x9F, 0x25, 0x0D, 0x99, 0x49, 0x41, 0x1F, 0x01, 0x09}; //숫자패턴 0~9를 미리 배열에 미리 저장해둠

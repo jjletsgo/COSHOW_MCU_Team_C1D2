@@ -4,6 +4,7 @@
 #include "motor_step.h"
 #include "button.h"
 #include <stdbool.h>
+#include "timer_0.h"
 #define IN4 PD4
 #define IN3 PD5
 #define IN2 PD6
@@ -14,6 +15,7 @@
 static volatile step_mode_t g_mode = STEP_HALF_STEP;
 static volatile uint16_t g_delay_us = 2000;
 
+volatile timer_ms step_timer;
 volatile uint8_t angle_level = 0;
 volatile uint8_t value = 0;
 volatile int32_t steps = 0;
@@ -108,11 +110,8 @@ void motor_step_change(uint8_t level, step_dir_t dir)
 		uint16_t remain = g_delay_us;
 
 		while (remain >= 1000) {
-			_delay_ms(1);
-			remain -= 1000;
-		}
-		while (remain--) {
-			_delay_us(1);
+			if (timer_delay_ms(&step_timer, 1))
+				remain -= 1000;
 		}
 	}
 }

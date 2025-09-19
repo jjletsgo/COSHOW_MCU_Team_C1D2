@@ -1,7 +1,7 @@
 #include "common.h"
 #include <avr/interrupt.h>
 #include "encoder.h"
-
+#include "timer_0.h"
 static volatile uint32_t hall_count = 0;   
 static volatile uint16_t timer_ms   = 0;   
 

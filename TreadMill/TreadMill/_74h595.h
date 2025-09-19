@@ -1,5 +1,5 @@
 ﻿/*
- * _74595.h
+ * _74h595.h
  *
  * Created: 2025-09-12 오후 11:39:09
  *  Author: User
@@ -8,8 +8,8 @@
 
 
 
-#ifndef _74595_H_
-#define _74595_H_
+#ifndef _74H595_H_
+#define _74H595_H_
 #include "timer_0.h"
 #include <avr/io.h> 
 #include "common.h"
