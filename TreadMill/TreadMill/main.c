@@ -7,8 +7,8 @@
 #include "common.h"
 #include <util/delay.h>
 #include "UART.h"
-#include "timer_1.h"
-#include "_7_segment.h"
+#include "timer_0.h"
+#include "_74h595.h"
 #include "ADC.h"
 #include "button.h"
 #include "motor_dc.h"
@@ -17,12 +17,13 @@
 //UART_INIT(), init_7_segment() 는 main에서 해주고 count_on_7_segment()랑 idle_7_segment() 는 버튼 입력에따라 메인 루프에서 호출해주면됩니다.
 
 int main(void) {
+	timer0_init();
 	UART_INIT();
 	Button_Init();
 	ADC_init();
 	ADC_select_channel(2);
 	motor_step_init(STEP_HALF_STEP);
-	init_7_segment(); //타이머0 활성화 및 74595와 연결된 atmeag328p의 핀 설정
+	init_74595();  //타이머0 활성화 및 74595와 연결된 atmeag328p의 핀 설정
 	//count_off_7_segment(); //타이머1 비활성화 -> 0만 출력.
 	//count_on_7_segment(); //타이머1 오버플로 인터럽트 활성화 및 previous time을 millis()로 설정 및 cnt를 1로 설정
 	
