@@ -29,7 +29,7 @@ typedef enum {
     BUTTON_ON_OFF
 } Button_t;
 
-extern Button_t debug_button;
+
 // 함수 프로토타입
 Button_t Button_ADC_getRaw(uint16_t ADC_val);     // Raw ADC 값 -> 버튼 상태
 Button_t Button_ADC_getPressed(uint16_t ADC_val);     // 디바운싱된 버튼 눌림 감지
