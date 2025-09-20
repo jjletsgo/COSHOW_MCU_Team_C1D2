@@ -1,3 +1,4 @@
+
 #include "common.h"
 #include <avr/interrupt.h>
 #include "emergency_stop.h"
@@ -26,9 +27,8 @@ ISR(INT0_vect)
 	if (PIND & (1<<PD2)) {
 		motor_dc_stop();
 		motor_step_stop();
-		current_state = IDLE;
 	}
-	else if ((PIND & (1<<PD2)) == 0){
+	else {
 		motor_dc_init();
 		motor_dc_setup();
 		motor_step_init(STEP_HALF_STEP);

@@ -11,6 +11,7 @@
 #define IN1 PD7
 #define COIL_MASK ((1<<IN1)|(1<<IN2)|(1<<IN3)|(1<<IN4))
 #define STEP_ANGLE 128
+#include "UART.h"
 
 static volatile step_mode_t g_mode = STEP_HALF_STEP;
 static volatile uint16_t g_delay_us = 2000;
@@ -70,9 +71,7 @@ void step_set_speed_rpm(uint16_t rpm)
 }
 
 void motor_step_change(uint8_t level, step_dir_t dir)
-{
-	level = clamp_level(level);
-	
+{	
 	if (turn_off == true){
 		steps = level * STEP_ANGLE;
 	}
@@ -80,6 +79,7 @@ void motor_step_change(uint8_t level, step_dir_t dir)
 		steps = STEP_ANGLE;
 	}
 	else {
+		angle_level = clamp_level(level);
 		steps = 0;
 		return;
 	}
@@ -110,8 +110,11 @@ void motor_step_change(uint8_t level, step_dir_t dir)
 		uint16_t remain = g_delay_us;
 
 		while (remain >= 1000) {
-			if (timer_delay_ms(&step_timer, 1))
-				remain -= 1000;
+			_delay_ms(1);
+			remain -= 1000;
+		}
+		while (remain--) {
+			_delay_us(1);
 		}
 	}
 }
@@ -128,15 +131,12 @@ void motor_step_stop(void){
 
 void motor_step_up(void){
 	step_set_speed_rpm(10);
-	if (angle_level < LEVEL_MAX)
-		angle_level++;
+	angle_level++;
 	motor_step_change(angle_level, STEP_UP);
 }
 
 void motor_step_down(void){
 	step_set_speed_rpm(10);
-	if (angle_level > LEVEL_MIN)
-		angle_level--;
+	angle_level--;
 	motor_step_change(angle_level, STEP_DOWN);
-
 }

@@ -2,7 +2,7 @@
 #define EMERGENCY_STOP_H_
 
 #include <stdint.h>
-#include "board.h"
+#include "common.h"
 
 void emergency_stop_init(void);
 

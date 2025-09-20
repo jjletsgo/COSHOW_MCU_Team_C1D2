@@ -2,8 +2,7 @@
 #include <avr/interrupt.h>
 #include "encoder.h"
 #include "timer_0.h"
-static volatile uint32_t hall_count = 0;   
-static volatile uint16_t timer_ms   = 0;   
+static volatile uint32_t hall_count = 0;
 
 ISR(INT1_vect)
 {
@@ -18,8 +17,8 @@ void encoder_init(void)
 	EICRA &= ~((1 << ISC11) | (1 << ISC10));
 	EICRA |=  (1 << ISC11);
 
-	EIFR  |=  (1 << INTF1);   
-	EIMSK |=  (1 << INT1);  
+	EIFR  |=  (1 << INTF1);
+	EIMSK |=  (1 << INT1);
 }
 
 uint32_t encoder_read(void)
