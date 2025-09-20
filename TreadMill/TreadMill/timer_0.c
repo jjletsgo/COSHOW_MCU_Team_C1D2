@@ -55,7 +55,6 @@ uint8_t timer_delay_s(timer_s *timer, uint8_t s_interval) {
 	}
 	return 0;
 }
-
 // 오버플로우가 몇초마다 발생하는지 아니까 그걸 이용해서 오버플로우 발생시마다 경과시간 누적
 // 즉, 인터럽트가 주기적으로 계속 발생하며 누적 경과 시간을 계속해서 업데이트함
 ISR(TIMER0_OVF_vect) {
