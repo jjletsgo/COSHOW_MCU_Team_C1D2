@@ -8,12 +8,11 @@
 #ifndef DISPLAY_CTRL_H
 #define DISPLAY_CTRL_H
 
-#include <avr/io.h>
-#include <stdint.h>
-#include <stdbool.h>
+#include "common.h"
 #include "button.h"
 
-#define F_CPU          16000000UL
+#include <stdbool.h>
+
 #define TWI_FREQ       100000UL
 #define I2C_PRESCALER  1
 
@@ -45,7 +44,12 @@ void lcd_print_str(const char *str);
 void lcd_print_int(uint16_t value);
 void lcd_print_float(float value);
 
+void lcd_print_all(Button_t pressed);
 void lcd_print_start(void);
-void lcd_print_level(Button_t pressed);
-
+void lcd_print_info (float dist);
+void lcd_speed_up(void);
+void lcd_speed_down(void);
+void lcd_angle_up(void);
+void lcd_angle_down(void);
+void lcd_button_on(void);
 #endif // DISPLAY_CTRL_H

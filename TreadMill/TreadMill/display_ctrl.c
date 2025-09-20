@@ -4,12 +4,19 @@
  * Created: 2025-09-17 오후 11:29:50
  *  Author: AFHGF
  */ 
+
+#include "common.h"
 #include "display_ctrl.h"
 #include "button.h"
-#include <avr/io.h>
+#include "UART.h"
+#include "timer_0.h"
 #include <util/delay.h>
 
 static uint8_t lcd_backlight = LCD_BL;
+static uint8_t vel = 1;
+static uint8_t deg = 1;
+static uint8_t col_v = 2, col_d = 9;
+
 
 void i2c_init(void) {
 	TWSR = 0x00; // prescaler = 1
@@ -44,10 +51,11 @@ void lcd_set_ctrl(uint8_t data) {
 void lcd_pulse_enable(uint8_t data) {
 	i2c_start(LCD_I2C_ADDR);
 	i2c_write((data | LCD_EN) | lcd_backlight);
-	_delay_us(1);
+	//_delay_us(1);
+	
 	i2c_write((data & ~LCD_EN) | lcd_backlight);
 	i2c_stop();
-	_delay_us(50);
+	//_delay_us(50);
 }
 
 void lcd_write4(uint8_t nibble, uint8_t mode_rs) {
@@ -64,10 +72,14 @@ void lcd_send(uint8_t value, uint8_t mode_rs) {
 
 void lcd_command(uint8_t cmd) {
 	lcd_send(cmd, 0);
+	
+	/*
 	if (cmd == 0x01 || cmd == 0x02) {
 		_delay_ms(2);
 	}
+	*/
 }
+
 
 void lcd_backlight_on(bool on) {
 	if (on) lcd_backlight = LCD_BL;
@@ -97,6 +109,7 @@ void lcd_create_char(uint8_t location, const uint8_t pattern[8]) {
 }
 
 void lcd_init(void) {
+	static uint8_t i = 0;
 	_delay_ms(50);
 	lcd_backlight_on(true);
 	lcd_write4(0x30, 0);
@@ -109,9 +122,14 @@ void lcd_init(void) {
 	_delay_us(50);
 	lcd_command(0x28);      // 4bit, 2line, 5x8
 	lcd_command(0x08);      // display off
-	lcd_clear();
+	//lcd_clear();
 	lcd_command(0x06);      // entry mode set
 	lcd_command(0x0C);      // display on
+	lcd_set_cursor(0,0);
+	for(i=0; i<32; i++){
+		lcd_write_char(' ');
+	}
+	lcd_set_cursor(0, 0);
 }
 
 void lcd_print_str(const char *str) {
@@ -150,21 +168,19 @@ void lcd_print_float(float value) {
 	lcd_print_int(frac);
 }
 
-void lcd_print_start(void){
-	lcd_set_cursor(2,0);
-	lcd_write_char(0);
-	lcd_set_cursor(9,0);
-	lcd_write_char(0);	
-}
-
-void lcd_print_level(Button_t pressed){
+/*
+void lcd_print_all(Button_t pressed){
 	static uint8_t vel = 1;
 	static uint8_t deg = 1;
 	static uint8_t col_v = 2, col_d = 9;
+	static uint8_t i = 0;
+	
+	static bool status = false;
+	
 	switch(pressed){
 		case BUTTON_SPEED_UP:
 			if (vel < LEVEL_MAX){
-				vel ++;
+				vel++;
 				col_v ++;
 				lcd_set_cursor(col_v, 0);
 				lcd_write_char(0);
@@ -188,11 +204,94 @@ void lcd_print_level(Button_t pressed){
 			}
 			break;
 		case BUTTON_ANGLE_DOWN:
-			if (deg > LEVEL_MIN){
+			if (deg > LEVEL_MIN ){
 				deg --;
 				lcd_set_cursor(col_d, 0);
 				col_d --;
 				lcd_write_char(' ');
 			}
+			break;
+		
+		case BUTTON_ON_OFF:
+			if (status){
+				status = false;
+				lcd_set_cursor(0,0);
+				for(i=0; i<32; i++){
+					lcd_write_char(' ');
+				}
+				
+			}
+			else{
+				status = true;
+				vel = 1, deg =1;
+				col_v = 2, col_d = 9;
+				lcd_print_start();
+			}
+			
+	}
+}
+
+*/
+
+void lcd_print_start(void){
+	lcd_set_cursor(2,0);
+	lcd_write_char(0);
+	lcd_set_cursor(9,0);
+	lcd_write_char(0);
+}
+
+void lcd_speed_up(void)
+{
+	if (vel < LEVEL_MAX){
+		vel++;
+		col_v ++;
+		lcd_set_cursor(col_v, 0);
+		lcd_write_char(0);
+	}
+}
+
+void lcd_speed_down(void){
+	if (vel > LEVEL_MIN){
+		vel --;
+		lcd_set_cursor(col_v, 0);
+		col_v --;
+		lcd_write_char(' ');
+	}
+}
+
+void lcd_angle_up(void){
+	if (deg < LEVEL_MAX){
+		deg ++;
+		col_d ++;
+		lcd_set_cursor(col_d, 0);
+		lcd_write_char(0);
+	}
+}
+
+void lcd_angle_down(void){
+	if (deg > LEVEL_MIN ){
+		deg --;
+		lcd_set_cursor(col_d, 0);
+		col_d --;
+		lcd_write_char(' ');
+	}
+}
+
+void lcd_button_on(void){
+	static bool status = false;
+	static uint8_t i = 0;
+	
+	if (status){
+		status = false;
+		lcd_set_cursor(0,0);
+		for(i=0; i<32; i++){
+			lcd_write_char(' ');
+		}
+	}
+	else{
+		status = true;
+		vel = 1, deg =1;
+		col_v = 2, col_d = 9;
+		lcd_print_start();
 	}
 }
