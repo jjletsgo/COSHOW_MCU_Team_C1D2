@@ -10,11 +10,13 @@
 uint8_t pattern[] = {0x03, 0x9F, 0x25, 0x0D, 0x99, 0x49, 0x41, 0x1F, 0x01, 0x09}; //숫자패턴 0~9를 미리 배열에 미리 저장해둠
 uint8_t digit[] = {0x08, 0x04, 0x02, 0x01}; //자릿수 선택 
 uint8_t num_digits[4];
-STATE previous_state = IDLE;
 timer_s _7_segment_timer;
 timer_ms _7_segment_delay_timer;
 timer_ms segment_display_timer;  // 세그먼트 디스플레이용 타이머 추가
 timer_ms buzzer_timer;          // 부저용 별도 타이머 추가
+uint8_t _3sec_counter = 3; //첫 선언문 실행시에만 초기화됨
+
+
 
 //16비트 프로토콜 만드는 함수
 // 입력: 몇 번째 자리에 출력할지, 어떤 숫자 출력할지
@@ -46,46 +48,41 @@ void print_7_segment() {
 	static uint16_t min = 0;
 	static uint8_t display_digit = 0;  // 현재 표시할 자릿수
 	int i = 0;
+	static uint16_t buzzer_duration = 0;  // 부저 지속 시간 카운터
 
-	if(current_state == RUNNING && previous_state == IDLE) {
-		static uint8_t _3sec_counter = 3; //첫 선언문 실행시에만 초기화됨
-		static uint8_t buzzer_duration = 0;  // 부저 지속 시간 카운터
-		
-		// 1초마다 카운터 감소 및 부저 활성화
-		if(timer_delay_s(&_7_segment_timer, 1) && current_state == RUNNING) {
-			_3sec_counter--;
-			buzzer_duration = 200;  // 200ms 동안 부저 켜기 (200/5 = 40회 호출)
-		}
-		
-		// 1초 카운트 if문 true 되야지 실행됨. 부저 지속시간 점점 감소
-		// 5ms마다 체크해서 부저 남은시간 갱신
-		if(buzzer_duration > 0 && timer_delay_ms(&buzzer_timer, 5)) {  
-			buzzer_duration -= 5;
-		}
-		
-		// 화면 출력 (SEGMENT_DELAY 마다 실행됨)
-		if(timer_delay_ms(&segment_display_timer, SEGMENT_DELAY)) {
-			if(buzzer_duration > 0) {
-				WordDataWrite(make_16bit_protocol(3, _3sec_counter) | (1 << BUZZER));
-			} else { //평상시에 실행되는 함수 
-				WordDataWrite(make_16bit_protocol(3, _3sec_counter));
-			}
-		}
-		
-		if(_3sec_counter == 0) {
-			_3sec_counter = 3;
-			segment_display_timer.is_init_done = 0; 
-			previous_state = current_state; //이 때 previous_state가 RUNNING으로 바뀜
-			min = 0; //idle에서 running으로 변할때 실행되므로, 여기서 min을 0으로 초기화
-			for(i=0;i<4;i++) num_digits[i]=0; //RUNNING으로 바뀌기 전에 이전 RUNNING 단계에 사용된 num_digits을 0으로 초기화해준다.
-		}
-		return;
-	}
-
-	
-	
-	
 	switch(current_state) {
+
+		case INIT:
+			// 1초마다 카운터 감소 및 부저 활성화
+			if(timer_delay_s(&_7_segment_timer, 1) && current_state == INIT) {
+				_3sec_counter--;
+				buzzer_duration = 300;  // 300ms 동안 부저 켜기 (300/5 = 60회 호출)
+			}
+			
+			// 1초 카운트 if문 true 되야지 실행됨. 부저 지속시간 점점 감소
+			// 5ms마다 체크해서 부저 남은시간 갱신
+			if(buzzer_duration > 0 && timer_delay_ms(&buzzer_timer, 5)) {  
+				buzzer_duration -= 5;
+			}
+			
+			// 화면 출력 (SEGMENT_DELAY 마다 실행됨)
+			if(timer_delay_ms(&segment_display_timer, SEGMENT_DELAY)) {
+				if(buzzer_duration > 0) {
+					WordDataWrite(make_16bit_protocol(3, _3sec_counter) | (1 << BUZZER));
+				} else { //평상시에 실행되는 함수 
+					WordDataWrite(make_16bit_protocol(3, _3sec_counter));
+				}
+			}
+			
+			if(_3sec_counter == 0) {
+				_3sec_counter = 3;
+				segment_display_timer.is_init_done = 0; 
+				min = 0; //idle에서 running으로 변할때 실행되므로, 여기서 min을 0으로 초기화
+				for(i=0;i<4;i++) num_digits[i]=0; //RUNNING으로 바뀌기 전에 이전 RUNNING 단계에 사용된 num_digits을 0으로 초기화해준다.
+				current_state = RUNNING;
+				UART_printString("STATE CHANGED : INIT -> RUNNING \n");
+			}
+			break;
 		case IDLE:
 			// 타이머 기반으로 순차 디스플레이
 			if(timer_delay_ms(&segment_display_timer, SEGMENT_DELAY)) {
@@ -118,7 +115,6 @@ void print_7_segment() {
 			// Emergency stop 로직 구현 필요
 			break;
 	}
-	previous_state = current_state;
 }
 
 // SCK로 펄스하나 쏴주는 함수. 평소에는 LOW 상태 유지하므로 -> SCK로 positive edge 하나 쏴주는 것 -> 1bit shift 된다.

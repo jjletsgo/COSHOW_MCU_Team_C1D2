@@ -19,8 +19,9 @@
 uint16_t combine_uint8(uint8_t high, uint8_t low);
 typedef enum {
     IDLE = 0,
-    RUNNING = 1,
-    EMERGENCY_STOP = 2
+    INIT = 1,
+    RUNNING = 2,
+    EMERGENCY_STOP = 3
 } STATE;
 
 extern STATE current_state;

@@ -39,7 +39,7 @@ extern volatile unsigned long present_time;
 extern volatile unsigned long previous_time;
 
 typedef struct {
-    uint8_t is_init_done; // 첫 번째 호출인지 여부확인용 플래그변수
+    uint8_t is_init_done; // 첫 번째 호출인지 여부확인용 플래그변수 (C99 표준에서는 초기값 설정 불가)
     unsigned long ms_time; // ms 시간 저장할 변수
 } timer_ms;
 

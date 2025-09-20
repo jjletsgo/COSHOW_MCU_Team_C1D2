@@ -54,17 +54,19 @@ int main(void) {
 					UART_printString("BUTTON_ANGLE_UP is pushed\n");
 					break;
 				case BUTTON_ANGLE_DOWN:
-					UART_printString("BUTTON_ANGLE_DOWN is pushed\n");
+				UART_printString("BUTTON_ANGLE_DOWN is pushed\n");
 					break;
 				case BUTTON_ON_OFF:
 					UART_printString("BUTTON_ON_OFF is pushed\n");
 					if(current_state == IDLE) {
-						current_state = RUNNING; //상태를 RUNNING으로 변경
+						timer_reset_74595();
+						current_state = INIT; //상태를 RUNNING으로 변경
+						UART_printString("STATE CHANGED : IDLE -> INIT\n");
 						
 					} else if (current_state == RUNNING) {
 						timer_reset_74595();
 						current_state = IDLE; // 상태를 IDLE로 변경
-						
+						UART_printString("STATE CHANGED : RUNNING -> IDLE\n");
 					}
 				
 					break;
@@ -81,6 +83,10 @@ int main(void) {
 			
 			
 				break;
+			case INIT :
+						
+						
+			break;
 			case RUNNING :
 				
 			
