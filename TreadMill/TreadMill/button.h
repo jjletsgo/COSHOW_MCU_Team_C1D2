@@ -10,7 +10,7 @@
 
 #include <avr/io.h>
 // 디바운스 설정 (연속으로 같은 값이 몇 번 읽혀야 안정된 값으로 인정할지)
-#define DEBOUNCE_COUNT 2
+#define DEBOUNCE_COUNT 20
 
 // 버튼별 ADC 임계값 (실제 회로에 맞게 조정 필요)
 #define BUTTON_SPEED_UP_MAX    45

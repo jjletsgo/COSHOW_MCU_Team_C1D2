@@ -54,9 +54,12 @@ void print_7_segment() {
 
 		case INIT:
 			// 1초마다 카운터 감소 및 부저 활성화
+			if(_7_segment_timer.is_init_done == 0) {
+				buzzer_duration = 100;
+			}
 			if(timer_delay_s(&_7_segment_timer, 1) && current_state == INIT) {
 				_3sec_counter--;
-				buzzer_duration = 1000;  // 300ms 동안 부저 켜기 (300/5 = 60회 호출)
+				buzzer_duration = 100;  // 300ms 동안 부저 켜기 (300/5 = 60회 호출)
 			}
 			
 			// 5ms마다 체크해서 부저 남은시간 갱신
@@ -66,7 +69,7 @@ void print_7_segment() {
 			
 			// 화면 출력 (SEGMENT_DELAY 마다 실행됨)
 			if(timer_delay_ms(&segment_display_timer, SEGMENT_DELAY)) {
-				if(buzzer_duration > 0) {
+				if(buzzer_duration > 0 && _3sec_counter ) { 
 					WordDataWrite(make_16bit_protocol(3, _3sec_counter) | (1 << BUZZER));
 				} else { //평상시에 실행되는 함수 
 					WordDataWrite(make_16bit_protocol(3, _3sec_counter));
@@ -75,6 +78,7 @@ void print_7_segment() {
 			
 			if(_3sec_counter == 0) {
 				_3sec_counter = 3;
+				buzzer_duration = 0;
 				segment_display_timer.is_init_done = 0; 
 				min = 0; //idle에서 running으로 변할때 실행되므로, 여기서 min을 0으로 초기화
 				for(i=0;i<4;i++) num_digits[i]=0; //RUNNING으로 바뀌기 전에 이전 RUNNING 단계에 사용된 num_digits을 0으로 초기화해준다.
