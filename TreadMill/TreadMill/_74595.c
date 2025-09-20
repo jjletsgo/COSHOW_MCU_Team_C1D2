@@ -56,10 +56,9 @@ void print_7_segment() {
 			// 1초마다 카운터 감소 및 부저 활성화
 			if(timer_delay_s(&_7_segment_timer, 1) && current_state == INIT) {
 				_3sec_counter--;
-				buzzer_duration = 300;  // 300ms 동안 부저 켜기 (300/5 = 60회 호출)
+				buzzer_duration = 1000;  // 300ms 동안 부저 켜기 (300/5 = 60회 호출)
 			}
 			
-			// 1초 카운트 if문 true 되야지 실행됨. 부저 지속시간 점점 감소
 			// 5ms마다 체크해서 부저 남은시간 갱신
 			if(buzzer_duration > 0 && timer_delay_ms(&buzzer_timer, 5)) {  
 				buzzer_duration -= 5;
@@ -80,7 +79,7 @@ void print_7_segment() {
 				min = 0; //idle에서 running으로 변할때 실행되므로, 여기서 min을 0으로 초기화
 				for(i=0;i<4;i++) num_digits[i]=0; //RUNNING으로 바뀌기 전에 이전 RUNNING 단계에 사용된 num_digits을 0으로 초기화해준다.
 				current_state = RUNNING;
-				UART_printString("STATE CHANGED : INIT -> RUNNING \n");
+				UART_printString("STATE CHANGED : INIT -> RUNNING\n");
 			}
 			break;
 		case IDLE:
@@ -111,8 +110,11 @@ void print_7_segment() {
 			}
 			break;
 
-		case EMERGENCY_STOP:
-			// Emergency stop 로직 구현 필요
+		case EMERGENCY_STOP: // Emergency stop 로직 구현 필요
+			if(timer_delay_ms(&segment_display_timer, SEGMENT_DELAY)) {
+				WordDataWrite(make_16bit_protocol(display_digit, num_digits[display_digit]) | (1 << RED) | (1 << GREEN));
+				display_digit = (display_digit + 1) % 4;  // 0~3 순환
+			}
 			break;
 	}
 }

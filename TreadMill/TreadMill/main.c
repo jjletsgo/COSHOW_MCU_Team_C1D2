@@ -60,7 +60,7 @@ int main(void) {
 					UART_printString("BUTTON_ON_OFF is pushed\n");
 					if(current_state == IDLE) {
 						timer_reset_74595();
-						current_state = INIT; //상태를 RUNNING으로 변경
+						current_state = INIT; //상태를 INIT으로 변경
 						UART_printString("STATE CHANGED : IDLE -> INIT\n");
 						
 					} else if (current_state == RUNNING) {
@@ -100,6 +100,7 @@ int main(void) {
 		}
 		
 		
+		
 	
 		
 		
@@ -107,7 +108,7 @@ int main(void) {
 
 		
 		
-		print_7_segment();//7세그먼트 동작
+		print_7_segment();//7세그먼트 동작, INIT 상태에서 실행되면 3초후 RUNNING으로 상태 변경
 		
 	}
 	return 1;
