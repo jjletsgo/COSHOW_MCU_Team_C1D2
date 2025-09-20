@@ -13,6 +13,8 @@
 #include "motor_step.h"
 #include "encoder.h"
 #include "_74hc595.h"
+#include "load_cell.h"
+#include "emergency_stop.h"
 #include <util/delay.h>
 
 static const uint8_t fullBlock[8] = {
@@ -40,6 +42,8 @@ int main(void){
    init_74595();
    encoder_init();
    motor_step_init(STEP_HALF_STEP);
+   load_cell_init();
+   load_offset = load_cell_read();		// offset 구하기
 
    while(1){
       motor_step_update();
@@ -101,7 +105,9 @@ int main(void){
 		
 		break;
 		case RUNNING :
-
+			if(load_cell_emergency()){
+				current_state = EMERGENCY_STOP;
+			}
 		break;
 		case EMERGENCY_STOP :
 		

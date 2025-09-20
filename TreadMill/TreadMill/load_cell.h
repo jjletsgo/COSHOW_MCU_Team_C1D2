@@ -6,8 +6,7 @@
  */ 
 #ifndef LOAD_CELL_H
 #define LOAD_CELL_H
-
-#include <avr/io.h>
+#include "common.h"
 #include <stdint.h>
 
 // HX711 핀 정의
