@@ -56,7 +56,7 @@ int main(void) {
 	sei(); //전역 인터럽트 활성화
 
 	while(1) {
-
+		motor_step_update();
 		//UART_print16bitNumber(Button_ADC_getDebounced(read_ADC()));
 		//UART_print16bitNumber(Button_ADC_getPressed(read_ADC()));
 		//UART_printString("\n");
@@ -75,11 +75,11 @@ int main(void) {
 
 			switch(pressed) {
 				case BUTTON_SPEED_UP:
-					UART_printString("BUTTON_SPPED_UP is pushed\n");
+					UART_printString("BUTTON_SPEED_UP is pushed\n");
 					motor_dc_up();
 					break;
 				case BUTTON_SPEED_DOWN:
-					UART_printString("BUTTON_SPPED_DOWN is pushed\n");
+					UART_printString("BUTTON_SPEED_DOWN is pushed\n");
 					motor_dc_down();
 					break;
 				case BUTTON_ANGLE_UP:
