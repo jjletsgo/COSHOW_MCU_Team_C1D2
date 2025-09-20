@@ -6,6 +6,7 @@
  */ 
 #include "button.h"
 
+Button_t debug_button = BUTTON_NONE;
 
 
 // 정적 변수들 (디바운싱을 위한 상태 저장)

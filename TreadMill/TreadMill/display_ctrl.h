@@ -10,7 +10,6 @@
 
 #include "common.h"
 #include "button.h"
-#include "encoder.h"
 
 #include <stdbool.h>
 
@@ -45,8 +44,9 @@ void lcd_print_str(const char *str);
 void lcd_print_int(uint16_t value);
 void lcd_print_float(float value);
 
-void lcd_print_layout(void);
-void lcd_print_info (void);
+void lcd_print_all(Button_t pressed);
+void lcd_print_start(void);
+void lcd_print_info (float dist);
 void lcd_speed_up(void);
 void lcd_speed_down(void);
 void lcd_angle_up(void);

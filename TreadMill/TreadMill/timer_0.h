@@ -4,14 +4,19 @@
  * Created: 2025-09-12 오후 10:35:17
  *  Author: User
  */ 
-#include "common.h"
+
+#ifndef F_CPU 
+#define F_CPU 16000000L
+#endif
 
 #ifndef TIMER_0_H_
 #define TIMER_0_H_
 //프로그램 시작 이후 경과시간
 
+#include <avr/io.h>
 #include <avr/interrupt.h>
 #include "UART.h"
+#include "common.h"
 
 //마이크로초당 클럭을 저장. 값은 16
 #define CLOCKS_PER_MICRO ( F_CPU / 1000000L ) 

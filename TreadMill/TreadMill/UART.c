@@ -107,20 +107,3 @@ void UART_print32bitNumber (uint32_t no) {
 	
 	for(i = index; i >= 0; i--) UART_transmit(numString[i]);
 }
-
-static void UART_printHexNibble(uint8_t n) {
-	static const char HEX[] = "0123456789ABCDEF";
-	UART_putc(HEX[n & 0x0F]);
-}
-
-void UART_printHex8(uint8_t v) {
-	UART_printString("0x");
-	UART_printHexNibble(v >> 4);
-	UART_printHexNibble(v);
-}
-
-void UART_putc(char c)
-{
-	while (!(UCSR0A & (1<<UDRE0))) { /* wait TX buffer empty */ }
-	UDR0 = c;
-}
