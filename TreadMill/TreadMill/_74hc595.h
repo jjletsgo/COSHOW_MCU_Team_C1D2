@@ -6,9 +6,12 @@
  */ 
 
 
+
+
 #ifndef _74HC595_H_
 #define _74HC595_H_
 #include "timer_0.h"
+#include <avr/io.h> 
 #include "common.h"
 #include "UART.h"
 #include <util/delay.h>

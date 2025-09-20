@@ -45,15 +45,15 @@ uint8_t timer_delay_ms(timer_ms *timer, uint8_t ms_interval) {
 
 //인자로 타이머의 주소와 , s 단위의 딜레이 간격을 주시면됩니다. 딜레이는 0~255s 까지 가능합니다
 uint8_t timer_delay_s(timer_s *timer, uint8_t s_interval) {
-	if (timer->is_init_done && (secs() - timer->s_time >= s_interval)) { //초기화 완료된 타이머이고 현재 시간과 타이머의 차이가 s_interval 이상인 경우
-        timer->s_time = secs();  // 기준점 갱신
+	if (timer->is_init_done && (millis() - timer->s_time >= s_interval*1000)) { //초기화 완료된 타이머이고 현재 시간과 타이머의 차이가 ms_interval 이상인 경우
+		timer->s_time = millis();  // 기준점 갱신
 		timer->is_init_done = 0; // 다음번 사용을 위해 초기화 안된 것으로 설정
-        return 1;           // 딜레이 끝남
-    } else if(timer->is_init_done == 0) { //초기화 안된 타이머의 경우
-		timer->s_time = secs(); // 타이머를 현재 누적 s로 설정
+		return 1;           // 딜레이 끝남
+	} else if(timer->is_init_done == 0) { //초기화 안된 타이머의 경우
+		timer->s_time = millis(); // 타이머를 현재 누적 ms로 설정
 		timer->is_init_done = 1; // 타이머를 초기화 완료된 것으로 설정
 	}
-	return 0;  
+	return 0;
 }
 
 // 오버플로우가 몇초마다 발생하는지 아니까 그걸 이용해서 오버플로우 발생시마다 경과시간 누적
