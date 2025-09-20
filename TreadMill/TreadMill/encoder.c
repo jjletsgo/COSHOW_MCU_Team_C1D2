@@ -2,7 +2,7 @@
 #include <avr/interrupt.h>
 #include "encoder.h"
 #include "timer_0.h"
-static volatile uint32_t hall_count = 0;
+static volatile uint8_t hall_count = 0;
 
 ISR(INT1_vect)
 {
@@ -21,10 +21,10 @@ void encoder_init(void)
 	EIMSK |=  (1 << INT1);
 }
 
-uint32_t encoder_read(void)
+uint8_t encoder_read(void)
 {
 	uint8_t s = SREG; cli();
-	uint32_t value = hall_count;
+	uint8_t value = hall_count;
 	hall_count = 0;
 	SREG = s;
 	return value;
