@@ -27,7 +27,7 @@ static volatile step_dir_t g_direction = STEP_UP;
 static volatile uint32_t g_remaining_steps = 0;
 static volatile int8_t g_current_seq_idx = 0;
 
-volatile timer_ms step_timer = {0, 0};  // 타이머 구조체 초기화
+timer_ms step_timer = {0, 0};  // 타이머 구조체 초기화
 volatile uint8_t angle_level = 0;
 volatile uint8_t value = 0;
 volatile int32_t steps = 0;

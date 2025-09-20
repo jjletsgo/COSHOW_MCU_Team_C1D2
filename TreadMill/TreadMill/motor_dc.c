@@ -1,7 +1,6 @@
 ﻿#include "common.h"
 #include "motor_dc.h"
 #include "button.h"
-#include <util/delay.h>
 
 const uint8_t  SpeedPwm[LEVEL_MAX + 1]  = SPEED_TABLE;
 volatile uint8_t speed_level = 0;
