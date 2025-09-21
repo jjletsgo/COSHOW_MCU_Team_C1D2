@@ -22,7 +22,8 @@ typedef enum {
     IDLE = 0,
     INIT = 1,
     RUNNING = 2,
-    EMERGENCY_STOP = 3
+    EMERGENCY_STOP = 3,
+    PROGRAM_A = 4
 } STATE;
 
 extern STATE current_state;

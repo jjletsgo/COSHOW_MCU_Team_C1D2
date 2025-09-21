@@ -53,7 +53,7 @@ int main(void){
 
       uint16_t adc_value = read_ADC();
       Button_t pressed = Button_ADC_getPressed(adc_value);
-	  load_active = load_cell_status_check(load_offset);
+	   load_active = load_cell_status_check(load_offset);
 
       if (pressed != BUTTON_NONE) { // 버튼 1개라도 눌리면 실행됨. 버튼 안눌리면 실행 x
          //lcd_print_all(pressed);
@@ -64,25 +64,25 @@ int main(void){
             lcd_speed_up();
             motor_dc_up();
             break;
-            case BUTTON_SPEED_DOWN:
+         case BUTTON_SPEED_DOWN:
             UART_printString("BUTTON_SPPED_DOWN is pushed\n");
             lcd_speed_down();
             motor_dc_down();
             break;
-            case BUTTON_ANGLE_UP:
+         case BUTTON_ANGLE_UP:
             UART_printString("BUTTON_ANGLE_UP is pushed\n");
-			motor_step_up();
+			   motor_step_up();
             lcd_angle_up();
             break;
-            case BUTTON_ANGLE_DOWN:
+         case BUTTON_ANGLE_DOWN:
             UART_printString("BUTTON_ANGLE_DOWN is pushed\n");
-			motor_step_down();
+			   motor_step_down();
             lcd_angle_down();
 			break;
 			case BUTTON_PROGRAM_A:
 			
             break;
-            case BUTTON_ON_OFF:
+         case BUTTON_ON_OFF:
             //UART_printString("BUTTON_ON_OFF is pushed\n");
             lcd_button_on();
             if(current_state == IDLE) {
@@ -98,8 +98,8 @@ int main(void){
                 current_state = IDLE; // 상태를 IDLE로 변경
             }
             break;
-            default:
-            UART_printString("정의되지 않은 버튼 입력");
+         default:
+            UART_printString("정의되지 않은 버튼 입력\n");
             break;
          }
       }
@@ -107,25 +107,29 @@ int main(void){
 	     
 	     switch(current_state) {
 		     case IDLE :
-		     UART_printString("IDLE!!!!");
+		     UART_printString("IDLE!!!!\n");
 		     
 		     break;
 		     case INIT :
-		     UART_printString("INIT!!!!");
+		     UART_printString("INIT!!!!\n");
 		     motor_dc_init();
 			 motor_step_init(STEP_HALF_STEP);
 
 		     break;
 		     case RUNNING :
-		     UART_printString("RUNNING!!!!");
+		     UART_printString("RUNNING!!!!\n");
 		     motor_dc_setup();
 		     break;
 			 
 		     case EMERGENCY_STOP :
-		     UART_printString("EMERGENCY_STOP");
+		     UART_printString("EMERGENCY_STOP\n");
 		     motor_dc_stop();
 		     motor_step_stop();
 			 
+		     break;
+           case PROGRAM_A :
+		     UART_printString("PROGRAM_A!!!!\n");
+		     motor_dc_setup();
 		     break;
 	     }
      }
