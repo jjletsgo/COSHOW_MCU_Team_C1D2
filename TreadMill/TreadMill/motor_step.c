@@ -146,7 +146,10 @@ void motor_step_change(uint8_t level, step_dir_t dir)
 	uint32_t target_steps = 0;
 	
 	if (turn_off == true) {
-		target_steps = (level-1) * STEP_ANGLE;
+		if (level == 1) return;
+		else {
+			target_steps = (level-1) * STEP_ANGLE;
+			}
 	}
 	else if (1 <= level && level <= 5) {
 		target_steps = STEP_ANGLE;
