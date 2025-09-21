@@ -10,7 +10,7 @@
 #include "common.h"
 #include "UART.h"
 #include "timer_0.h"
-#include "_74595.h"
+#include "_74hc595.h"
 #include "ADC.h"
 #include "button.h"
 
