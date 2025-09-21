@@ -45,6 +45,12 @@ int main(void){
    load_cell_init();
    load_offset = load_cell_read();		// offset 구하기
 
+
+
+   STATE previous_state = IDLE;
+
+
+
    while(1){
       motor_step_update();
 
@@ -53,71 +59,71 @@ int main(void){
 	  
       if (pressed != BUTTON_NONE) { // 버튼 1개라도 눌리면 실행됨. 버튼 안눌리면 실행 x
          //lcd_print_all(pressed);
-
-		switch(pressed) {
-			case BUTTON_SPEED_UP:
-            UART_printString("BUTTON_SPPED_UP is pushed\n");
-            lcd_speed_up();
-            motor_dc_up();
-            break;
+         switch(pressed) {
+            case BUTTON_SPEED_UP:
+               UART_printString("BUTTON_SPPED_UP is pushed\n");
+               lcd_speed_up();
+               motor_dc_up();
+               break;
             case BUTTON_SPEED_DOWN:
-            UART_printString("BUTTON_SPPED_DOWN is pushed\n");
-            lcd_speed_down();
-            motor_dc_down();
-            break;
+               UART_printString("BUTTON_SPPED_DOWN is pushed\n");
+               lcd_speed_down();
+               motor_dc_down();
+               break;
             case BUTTON_ANGLE_UP:
-            UART_printString("BUTTON_ANGLE_UP is pushed\n");
-			motor_step_up();
-            lcd_angle_up();
-            break;
+               UART_printString("BUTTON_ANGLE_UP is pushed\n");
+               motor_step_up();
+               lcd_angle_up();
+               break;
             case BUTTON_ANGLE_DOWN:
-            UART_printString("BUTTON_ANGLE_DOWN is pushed\n");
-			motor_step_down();
-            lcd_angle_down();
-            break;
+               UART_printString("BUTTON_ANGLE_DOWN is pushed\n");
+               motor_step_down();
+               lcd_angle_down();
+               break;
             case BUTTON_ON_OFF:
-            //UART_printString("BUTTON_ON_OFF is pushed\n");
-            lcd_button_on();
-            if(current_state == IDLE) {
-				timer_reset_74595();
-				motor_dc_init();
-				motor_dc_setup();
-				current_state = INIT; //상태를 INIT으로 변경
-            }
-            else if (current_state == RUNNING) {
-				timer_reset_74595();
-				motor_dc_stop();
-				motor_step_stop();
-               current_state = IDLE; // 상태를 IDLE로 변경
-            }
-            break;
+               //UART_printString("BUTTON_ON_OFF is pushed\n");
+               lcd_button_on();
+               if(current_state == IDLE) {
+                  timer_reset_74595();
+                  motor_dc_init();
+                  motor_dc_setup();
+                  current_state = INIT; //상태를 INIT으로 변경
+               } else if (current_state == RUNNING) {
+                  timer_reset_74595();
+                  motor_dc_stop();
+                  motor_step_stop();
+                  current_state = IDLE; // 상태를 IDLE로 변경
+               }
+               break;
             default:
-            UART_printString("정의되지 않은 버튼 입력");
-            break;
-         }
+                  UART_printString("정의되지 않은 버튼 입력");
+               break;
+            }
       }
-      switch(current_state) {
-		case IDLE :
-
-		break;
-		case INIT :
-		
-		
-		break;
-		case RUNNING :
-			if(load_cell_emergency()){
-				current_state = EMERGENCY_STOP;
+      if(current_state != previous_state) {
+			
+			switch(current_state) {
+				case IDLE :
+					UART_printString("IDLE!!!!");
+				
+				break;
+				case INIT :
+					UART_printString("INIT!!!!");
+				
+				break;
+				case RUNNING :
+					UART_printString("RUNNING!!!!");
+				
+				break;
+				case EMERGENCY_STOP :
+					UART_printString("EMERGENCY_STOP");
+				
+				break;	
 			}
-		break;
-		case EMERGENCY_STOP :
-		
-		
-		break;
-		
-		default:
-		break;
-         
-      }
+		}
+		previous_state = current_state;
+
+
       print_7_segment();//7세그먼트 동작
       lcd_print_info();
    }
