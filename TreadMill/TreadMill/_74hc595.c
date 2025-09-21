@@ -116,7 +116,7 @@ void print_7_segment() {
 
 		case EMERGENCY_STOP: // Emergency stop 로직 구현 필요
 			if(timer_delay_ms(&segment_display_timer, SEGMENT_DELAY)) {
-				WordDataWrite(make_16bit_protocol(display_digit, num_digits[display_digit]) | (1 << RED) | (1 << GREEN));
+				WordDataWrite(make_16bit_protocol(display_digit, num_digits[display_digit]) | (1 << BLUE) | (1 << GREEN));
 				display_digit = (display_digit + 1) % 4;  // 0~3 순환
 			}
 			break;
