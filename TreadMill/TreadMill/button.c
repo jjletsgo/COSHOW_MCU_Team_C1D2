@@ -21,7 +21,8 @@ Button_t Button_ADC_getRaw(uint16_t ADC_val) {
     else if (ADC_val < BUTTON_SPEED_DOWN_MAX) return BUTTON_SPEED_DOWN;
     else if (ADC_val < BUTTON_ANGLE_UP_MAX) return BUTTON_ANGLE_UP;
     else if (ADC_val < BUTTON_ANGLE_DOWN_MAX) return BUTTON_ANGLE_DOWN;
-    else if (ADC_val < BUTTON_ON_OFF_MAX) return BUTTON_ON_OFF;
+    else if (ADC_val < BUTTON_PROGRAM_A_MAX) return BUTTON_PROGRAM_A;
+	else if (ADC_val < BUTTON_ON_OFF_MAX) return BUTTON_ON_OFF ;
     else return BUTTON_NONE;
 }
 
@@ -43,7 +44,7 @@ Button_t Button_ADC_getDebounced(uint16_t ADC_val) {
     
     // 현재 값을 저장
     lastRead = current;
-    
+     
     // 충분한 시간 동안 같은 값이 유지되면 안정된 값으로 업데이트
     if (count >= DEBOUNCE_COUNT) {
         lastStable = current;
