@@ -15,6 +15,7 @@
 
 #include <avr/io.h> 
 #include "timer_0.h"
+#include <stdbool.h>
 
 uint16_t combine_uint8(uint8_t high, uint8_t low);
 typedef enum {
@@ -26,4 +27,5 @@ typedef enum {
 
 extern STATE current_state;
 
+extern int32_t load_offset;
 #endif /* COMMON_H_ */

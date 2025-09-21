@@ -28,7 +28,7 @@ static volatile uint32_t g_remaining_steps = 0;
 static volatile int8_t g_current_seq_idx = 0;
 
 timer_ms step_timer = {0, 0};  // 타이머 구조체 초기화
-volatile uint8_t angle_level = 0;
+volatile uint8_t angle_level = 1;
 volatile uint8_t value = 0;
 volatile int32_t steps = 0;
 volatile bool turn_off = false;
@@ -103,6 +103,7 @@ void motor_step_init(step_mode_t mode)
 	g_state = STEP_IDLE;
 	g_current_seq_idx = 0;
 	step_release();
+	angle_level=1;
 }
 
 // 스텝모터 업데이트 함수 (메인루프에서 호출)
@@ -145,7 +146,7 @@ void motor_step_change(uint8_t level, step_dir_t dir)
 	uint32_t target_steps = 0;
 	
 	if (turn_off == true) {
-		target_steps = level * STEP_ANGLE;
+		target_steps = (level-1) * STEP_ANGLE;
 	}
 	else if (1 <= level && level <= 5) {
 		target_steps = STEP_ANGLE;
@@ -177,6 +178,7 @@ void motor_step_stop(void)
 	turn_off = true;
 	motor_step_change(angle_level, STEP_DOWN);
 	turn_off = false;
+	angle_level = 1;
 }
 
 // 스텝모터 위로

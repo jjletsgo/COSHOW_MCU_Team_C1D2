@@ -6,8 +6,9 @@
  */ 
 #ifndef LOAD_CELL_H
 #define LOAD_CELL_H
+
 #include "common.h"
-#include <stdint.h>
+#include <stdbool.h>
 
 // HX711 핀 정의
 #define LOAD_CELL_DT_PIN 3    // PC3 : Input
@@ -25,6 +26,6 @@
 void load_cell_init(void);
 int32_t load_cell_read(void);
 float load_cell_convert(int32_t raw);
-bool load_cell_status(float data);
-
+bool load_cell_status(int32_t offset);
+bool load_cell_status_check(int32_t offset);
 #endif // LOAD_CELL_H

@@ -24,299 +24,291 @@ static uint8_t deg = 1;
 static uint8_t col_v = 2, col_d = 10;
 static bool status = false;
 
-// 이전 상태를 기억하기 위한 static 변수. 초기값을 -1로 설정하여 프로그램 시작 시 IDLE 상태 로직이 실행되도록 합니다.
 static STATE last_state = -1;
-// "Initializing..." 메시지 표시 시간을 재기 위한 타이머 변수
 static timer_s init_msg_timer;
-// 메시지를 표시 중인지 상태를 기억하는 플래그 변수
 static bool init_msg = false;
 
 void i2c_init(void) {
-	TWSR = 0x00; // prescaler = 1
-	TWBR = (uint8_t)((F_CPU / TWI_FREQ - 16) / 2);
+   TWSR = 0x00; // prescaler = 1
+   TWBR = (uint8_t)((F_CPU / TWI_FREQ - 16) / 2);
 }
 
 void i2c_start(uint8_t addr7) {
-	TWCR = (1<<TWINT) | (1<<TWSTA) | (1<<TWEN);
-	while (!(TWCR & (1<<TWINT)));
-	TWDR = (addr7 << 1) | 0; // SLA+W
-	TWCR = (1<<TWINT) | (1<<TWEN);
-	while (!(TWCR & (1<<TWINT)));
+   TWCR = (1<<TWINT) | (1<<TWSTA) | (1<<TWEN);
+   while (!(TWCR & (1<<TWINT)));
+   TWDR = (addr7 << 1) | 0; // SLA+W
+   TWCR = (1<<TWINT) | (1<<TWEN);
+   while (!(TWCR & (1<<TWINT)));
 }
 
 void i2c_write(uint8_t data) {
-	TWDR = data;
-	TWCR = (1<<TWINT) | (1<<TWEN);
-	while (!(TWCR & (1<<TWINT)));
+   TWDR = data;
+   TWCR = (1<<TWINT) | (1<<TWEN);
+   while (!(TWCR & (1<<TWINT)));
 }
 
 void i2c_stop(void) {
-	TWCR = (1<<TWINT) | (1<<TWEN) | (1<<TWSTO);
+   TWCR = (1<<TWINT) | (1<<TWEN) | (1<<TWSTO);
 }
 
 /* LCD 제어 함수 */
 void lcd_set_ctrl(uint8_t data) {
-	i2c_start(LCD_I2C_ADDR);
-	i2c_write(data | lcd_backlight);
-	i2c_stop();
+   i2c_start(LCD_I2C_ADDR);
+   i2c_write(data | lcd_backlight);
+   i2c_stop();
 }
 
 void lcd_pulse_enable(uint8_t data) {
-	i2c_start(LCD_I2C_ADDR);
-	i2c_write((data | LCD_EN) | lcd_backlight);
-	//_delay_us(1);
-	
-	i2c_write((data & ~LCD_EN) | lcd_backlight);
-	i2c_stop();
-	//_delay_us(50);
+   i2c_start(LCD_I2C_ADDR);
+   i2c_write((data | LCD_EN) | lcd_backlight);
+   //_delay_us(1);
+   
+   i2c_write((data & ~LCD_EN) | lcd_backlight);
+   i2c_stop();
+   //_delay_us(50);
 }
 
 void lcd_write4(uint8_t nibble, uint8_t mode_rs) {
-	uint8_t out = 0;
-	out |= (nibble & 0xF0);
-	if (mode_rs) out |= LCD_RS;
-	lcd_pulse_enable(out);
+   uint8_t out = 0;
+   out |= (nibble & 0xF0);
+   if (mode_rs) out |= LCD_RS;
+   lcd_pulse_enable(out);
 }
 
 void lcd_send(uint8_t value, uint8_t mode_rs) {
-	lcd_write4(value & 0xF0, mode_rs);           // 상위 4bit
-	lcd_write4((value << 4) & 0xF0, mode_rs);    // 하위 4bit
+   lcd_write4(value & 0xF0, mode_rs);           // 상위 4bit
+   lcd_write4((value << 4) & 0xF0, mode_rs);    // 하위 4bit
 }
 
 void lcd_command(uint8_t cmd) {
-	lcd_send(cmd, 0);
-	
-	/*
-	if (cmd == 0x01 || cmd == 0x02) {
-		_delay_ms(2);
-	}
-	*/
+   lcd_send(cmd, 0);
+   
+   /*
+   if (cmd == 0x01 || cmd == 0x02) {
+      _delay_ms(2);
+   }
+   */
 }
 
 
 void lcd_backlight_on(bool on) {
-	if (on) lcd_backlight = LCD_BL;
-	else lcd_backlight = 0;
-	lcd_set_ctrl(0);
+   if (on) lcd_backlight = LCD_BL;
+   else lcd_backlight = 0;
+   lcd_set_ctrl(0);
 }
 
 void lcd_write_char(uint8_t c) {
-	lcd_send(c, 1);
+   lcd_send(c, 1);
 }
 
 void lcd_clear(void) {
-	static uint8_t i = 0;
-	lcd_set_cursor(0, 0); // 커서를 첫 번째 줄로 이동
-	for(i = 0; i < 16; i++){
-		lcd_write_char(' ');
-	}
-	lcd_set_cursor(0, 1); // 커서를 두 번째 줄로 이동
-	for(i = 0; i < 16; i++){
-		lcd_write_char(' ');
-	}
-	lcd_set_cursor(0, 0); // 커서를 다시 원위치
+   static uint8_t i = 0;
+   lcd_set_cursor(0, 0); // 커서를 첫 번째 줄로 이동
+   for(i = 0; i < 16; i++){
+      lcd_write_char(' ');
+   }
+   lcd_set_cursor(0, 1); // 커서를 두 번째 줄로 이동
+   for(i = 0; i < 16; i++){
+      lcd_write_char(' ');
+   }
+   lcd_set_cursor(0, 0); // 커서를 다시 원위치
 }
 
 void lcd_set_cursor(uint8_t col, uint8_t row) {
-	static const uint8_t line_offset[2] = {0x00, 0x40};
-	lcd_command(0x80 | (col + line_offset[row]));
+   static const uint8_t line_offset[2] = {0x00, 0x40};
+   lcd_command(0x80 | (col + line_offset[row]));
 }
 
 void lcd_create_char(uint8_t location, const uint8_t pattern[8]) {
-	location &= 0x7;
-	lcd_command(0x40 | (location << 3));
-	for (uint8_t i = 0; i < 8; i++) {
-		lcd_write_char(pattern[i]);
-	}
+   location &= 0x7;
+   lcd_command(0x40 | (location << 3));
+   for (uint8_t i = 0; i < 8; i++) {
+      lcd_write_char(pattern[i]);
+   }
 }
 
 void lcd_init(void) {
-	_delay_ms(50);
-	lcd_backlight_on(true);
-	lcd_write4(0x30, 0);
-	_delay_ms(5);
-	lcd_write4(0x30, 0);
-	_delay_us(150);
-	lcd_write4(0x30, 0);
-	_delay_us(150);
-	lcd_write4(0x20, 0);    // 4bit mode
-	_delay_us(50);
-	lcd_command(0x28);      // 4bit, 2line, 5x8
-	lcd_command(0x08);      // display off
-	//lcd_clear();
-	lcd_command(0x06);      // entry mode set
-	lcd_command(0x0C);      // display on
-	lcd_set_cursor(0, 0); // 커서를 첫 번째 줄로 이동
-	lcd_clear();
+   _delay_ms(50);
+   lcd_backlight_on(true);
+   lcd_write4(0x30, 0);
+   _delay_ms(5);
+   lcd_write4(0x30, 0);
+   _delay_us(150);
+   lcd_write4(0x30, 0);
+   _delay_us(150);
+   lcd_write4(0x20, 0);    // 4bit mode
+   _delay_us(50);
+   lcd_command(0x28);      // 4bit, 2line, 5x8
+   lcd_command(0x08);      // display off
+   //lcd_clear();
+   lcd_command(0x06);      // entry mode set
+   lcd_command(0x0C);      // display on
+   lcd_clear();
 }
 
 void lcd_print_str(const char *str) {
-	while (*str) {
-		lcd_write_char((uint8_t)*str++);		// 문자열 시작 주소 -> NULL write
-	}
+   while (*str) {
+      lcd_write_char((uint8_t)*str++);      // 문자열 시작 주소 -> NULL write
+   }
 }
 
 void lcd_print_int(uint16_t value) {
-	char buffer[6];
-	char *ptr = buffer + sizeof(buffer) - 1;
-	uint16_t x = value;
-	
-	*ptr-- = '\0';
-	
-	if (x == 0){
-		*ptr-- = '0';
-	}
-	else {
-		while (x > 0) {		// 숫자를 문자로 변환해 버퍼에 역순으로 저장
-			*ptr-- = (char)('0' + (x % 10));
-			x /= 10;
-		}
-	}
-	ptr++;
-	lcd_print_str(ptr);
+   char buffer[6];
+   char *ptr = buffer + sizeof(buffer) - 1;
+   uint16_t x = value;
+   
+   *ptr-- = '\0';
+   
+   if (x == 0){
+      *ptr-- = '0';
+   }
+   else {
+      while (x > 0) {      // 숫자를 문자로 변환해 버퍼에 역순으로 저장
+         *ptr-- = (char)('0' + (x % 10));
+         x /= 10;
+      }
+   }
+   ptr++;
+   lcd_print_str(ptr);
 }
 
 
 void lcd_print_float(float value) {
-	uint8_t whole = (uint8_t)value;
-	uint8_t frac  = (uint8_t)((value - (float)whole) * 10.0f);
-	
-	lcd_print_int(whole);
-	lcd_print_str(".");
-	lcd_print_int(frac);
-}
-
-void lcd_print_layout(void){
-	lcd_set_cursor(0,0);
-	lcd_print_str("S:");
-	lcd_set_cursor(8,0);
-	lcd_print_str("A:");
-
-	lcd_set_cursor(2,0);
-	lcd_write_char(0); // 속도 레벨 1칸 채우기
-	lcd_set_cursor(10,0);
-	lcd_write_char(0); // 각도 레벨 1칸 채우기
+   uint8_t whole = (uint8_t)value;
+   uint8_t frac  = (uint8_t)((value - (float)whole) * 10.0f);
+   
+   lcd_print_int(whole);
+   lcd_print_str(".");
+   lcd_print_int(frac);
 }
 
 void lcd_speed_up(void)
-{	
-	if (current_state != RUNNING) return;
-	if (vel < LEVEL_MAX){
-		vel++;
-		col_v ++;
-		lcd_set_cursor(col_v, 0);
-		lcd_write_char(0);
-	}
+{   
+   if (current_state != RUNNING) return;
+   if (vel < LEVEL_MAX){
+      vel++;
+      col_v ++;
+      lcd_set_cursor(col_v, 0);
+      lcd_write_char(0);
+   }
 }
 
 void lcd_speed_down(void){
-	if (current_state != RUNNING) return;
-	if (vel > LEVEL_MIN){
-		vel --;
-		lcd_set_cursor(col_v, 0);
-		lcd_write_char(' ');
-		col_v --;
-	}
+   if (current_state != RUNNING) return;
+   if (vel > LEVEL_MIN){
+      vel --;
+      lcd_set_cursor(col_v, 0);
+      lcd_write_char(' ');
+      col_v --;
+   }
 }
 
 void lcd_angle_up(void){
-	if (current_state != RUNNING) return;
-	if (deg < LEVEL_MAX){
-		deg ++;
-		col_d ++;
-		lcd_set_cursor(col_d, 0);
-		lcd_write_char(0);
-	}
+   if (current_state != RUNNING) return;
+   if (deg < LEVEL_MAX){
+      deg ++;
+      col_d ++;
+      lcd_set_cursor(col_d, 0);
+      lcd_write_char(0);
+   }
 }
 
 void lcd_angle_down(void){
-	if (current_state != RUNNING) return;
-	if (deg > LEVEL_MIN ){
-		deg --;
-		lcd_set_cursor(col_d, 0);
-		lcd_write_char(' ');
-		col_d --;
-	}
+   if (current_state != RUNNING) return;
+   if (deg > LEVEL_MIN ){
+      deg --;
+      lcd_set_cursor(col_d, 0);
+      lcd_write_char(' ');
+      col_d --;
+   }
 }
 
 
 void lcd_button_on(void){
-	if (status){
-		status = false;
-		vel = 1, deg = 1;
-		col_v = 2, col_d = 10;
-		
-		dist = 0;
-		cal = 0;
-		
-		// lcd_clear();
-	}
-	else{ // 상태가 OFF일 때 -> ON으로 변경
-		status = true;
-		encoder_timer.is_init_done = 0;
-	}
+   if (status){
+      status = false;
+      vel = 1, deg = 1;
+      col_v = 2, col_d = 10;
+      
+      dist = 0;
+      cal = 0;
+      
+   }
+   else{
+      status = true;
+      encoder_timer.is_init_done = 0;
+   }
+}
+
+void lcd_print_level(void){
+   lcd_set_cursor(0,0);
+   lcd_print_str("S:");
+   lcd_set_cursor(8,0);
+   lcd_print_str("A:");
+
+   lcd_set_cursor(2,0);
+   lcd_write_char(0); // 속도 레벨 1칸 채우기
+   lcd_set_cursor(10,0);
+   lcd_write_char(0); // 각도 레벨 1칸 채우기
 }
 
 void lcd_print_info(void){
-	if (current_state != RUNNING) {
-		return;
-	}
-	
-	if (timer_delay_s(&encoder_timer, 1)){
-		// 1. 값 계산
-		count = encoder_read();
-		UART_print8bitNumber(count);
-		dist += (uint16_t)(count * 2 * DIAMETER * 3) / 100;
-		cal += 70 * (dist/100);
+   if (current_state != RUNNING) {
+      return;
+   }
+   
+   if (timer_delay_s(&encoder_timer, 1)){
+      // 1. 값 계산
+      count = encoder_read();
+      UART_print8bitNumber(count);
+      dist += (uint16_t)(count * 2 * DIAMETER * 3) / 100;
+      cal += 70 * (dist/100);
 
-		// 2. 화면 업데이트 (후행 숫자 방지 로직 포함)
-		lcd_set_cursor(0, 1);
-		lcd_print_str("D:      "); 
-		lcd_set_cursor(2, 1);
-		lcd_print_int(dist);
+      // 2. 화면 업데이트
+      lcd_set_cursor(0, 1);
+      lcd_print_str("D:      "); 
+      lcd_set_cursor(2, 1);
+      lcd_print_int(dist);
 
-		lcd_set_cursor(8, 1);
-		lcd_print_str("CAL:    "); 
-		lcd_set_cursor(12, 1);
-		lcd_print_int(cal);
-	}
+      lcd_set_cursor(8, 1);
+      lcd_print_str("CAL:    "); 
+      lcd_set_cursor(12, 1);
+      lcd_print_int(cal);
+   }
 }
 
 void lcd_state_change(void)
 {
-	if (current_state != last_state) {
-		
-		init_msg = false; 
+   if (current_state != last_state) {
+      
+      init_msg = false; 
 
-		switch (current_state) {
-			case (INIT):
-			case (IDLE):
-			lcd_clear();
-			lcd_print_str("Initializing...");
-			init_msg_timer.is_init_done = 0; // 1초 타이머 리셋
-			init_msg = true;   // 메시지 표시 중 플래그 활성화
-			break;
-			
-			case RUNNING:
-			// RUNNING 상태에 진입하면 화면을 정리하고 주행 정보 레이아웃을 표시합니다.
-			lcd_clear();
-			lcd_print_layout();
-			break;
-			default:
-			// 다른 상태에서는 화면을 지우기만 합니다.
-			lcd_clear();
-			break;
-		}
-		// 현재 상태를 last_state에 저장하여 이 로직이 반복 실행되는 것을 방지합니다.
-		last_state = current_state;
-	}
+      switch (current_state) {
+         case (INIT):
+         case (IDLE):
+         lcd_clear();
+         lcd_print_str("Initializing...");
+         init_msg_timer.is_init_done = 0; // 1초 타이머 리셋
+         init_msg = true;   // 메시지 표시 중 플래그 활성화
+         break;
+         
+         case RUNNING:
+         lcd_clear();
+         lcd_print_level();
+         break;
+         
+         default:
+         lcd_clear();
+         break;
+      }
+      // 현재 상태를 last_state에 저장. 로직 반복 실행 방지.
+      last_state = current_state;
+   }
 
-	// 2. 특정 상태에서 계속 실행되어야 하는 로직
-	// "Initializing..." 메시지를 표시 중인 경우, 1초가 지났는지 계속 확인합니다.
-	if (init_msg) {
-		if (timer_delay_s(&init_msg_timer, 2)) {
-			lcd_clear(); // 화면을 지웁니다.
-			init_msg = false; // 메시지 표시 중 플래그를 비활성화합니다.
-		}
-	}
+   if (init_msg) {
+      if (timer_delay_s(&init_msg_timer, 2)) {
+         lcd_clear();
+         init_msg = false;
+      }
+   }
 }

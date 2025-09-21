@@ -5,6 +5,7 @@
 #include "motor_dc.h"
 #include "motor_step.h"
 #include "button.h"
+#include "load_cell.h"
 
 void emergency_stop_init(void)
 {
@@ -22,7 +23,14 @@ void emergency_stop_init(void)
 	EIMSK |=  (1 << INT0);
 }
 
-// ISR만 교체
+
+bool load_cell_emergency(void){
+	long raw_value = load_cell_read();
+	long net_value = raw_value - load_offset;
+	float weight = load_cell_convert(net_value);
+	return load_cell_status(weight);
+}
+
 ISR(INT0_vect)
 {
 	static uint8_t expecting_rising = 1; // 1: 상승만 처리, 0: 하강만 처리
@@ -33,10 +41,7 @@ ISR(INT0_vect)
 		// 상승엣지(LOW->HIGH)만 처리: 현재가 HIGH라면 진짜 상승했다고 판단
 		if (state) {
 			// 정지
-			motor_dc_stop();
-			motor_step_stop();
-			
-			
+			current_state = EMERGENCY_STOP;
 			// 다음은 하강엣지(FALLING)만 받도록 전환
 			expecting_rising = 0;
 			EICRA = (EICRA | (1<<ISC01)) & ~(1<<ISC00); // ISC01=1, ISC00=0 → falling only
@@ -47,7 +52,7 @@ ISR(INT0_vect)
 		if (!state) {
 			// 재시작
 			current_state = IDLE;
-			// 다음은 상승엣지(RISING)만 받도록 전환
+
 			expecting_rising = 1;
 			EICRA |= (1<<ISC01) | (1<<ISC00); // rising only
 		}

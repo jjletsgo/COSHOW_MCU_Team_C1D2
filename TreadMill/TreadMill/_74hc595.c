@@ -98,9 +98,9 @@ void print_7_segment() {
 			if(timer_delay_s(&_7_segment_timer, 1) && current_state == RUNNING) {
 				 min++;  //1초 지나는걸 타이머로 측정하여 1초당 1분을 증가시킴. 원래는 60초당 1분으로 하는게 맞는데 시연을 위해 1분을 1초로 가정
 				UART_printString("1_sec_timer_expired, changing segment number\n");
-				UART_printString("min: ");
-				UART_print8bitNumber(min);
-				UART_printString("\n");
+				//UART_printString("min: ");
+				//UART_print8bitNumber(min);
+				//UART_printString("\n");
 				num_digits[0] = min / 60 / 10; //시간의 십의 자리
 				num_digits[1] = min / 60 % 10; // 시간의 일의 자리
 				num_digits[2] = (min % 60) / 10; //분의 십의 자리
