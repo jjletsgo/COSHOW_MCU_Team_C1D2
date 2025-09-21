@@ -8,8 +8,8 @@
 
 
 
-#ifndef _74595_H_
-#define _74595_H_
+#ifndef _74HC595_H_
+#define _74HC595_H_
 #include "timer_0.h"
 #include <avr/io.h> 
 #include "common.h"
@@ -34,7 +34,7 @@ void LatchClock(void);
 void WordDataWrite(uint16_t data);
 uint16_t make_16bit_protocol (uint8_t digit_num, uint8_t num);
 void print_7_segment();
-
+void set_74595_next_state_of_INIT(STATE state);
 
 
 

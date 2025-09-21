@@ -17,7 +17,9 @@
 #define BUTTON_SPEED_DOWN_MAX  150
 #define BUTTON_ANGLE_UP_MAX    290
 #define BUTTON_ANGLE_DOWN_MAX  450
-#define BUTTON_ON_OFF_MAX      600
+#define BUTTON_PROGRAM_A_MAX   560
+#define BUTTON_ON_OFF_MAX      700
+
 
 // 버튼 타입 정의
 typedef enum {
@@ -25,8 +27,9 @@ typedef enum {
     BUTTON_SPEED_UP,
     BUTTON_SPEED_DOWN,
     BUTTON_ANGLE_UP,
-    BUTTON_ANGLE_DOWN,
-    BUTTON_ON_OFF
+    BUTTON_ANGLE_DOWN, 
+	BUTTON_PROGRAM_A,
+	BUTTON_ON_OFF
 } Button_t;
 
 

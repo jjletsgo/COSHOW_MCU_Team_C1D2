@@ -4,7 +4,7 @@
  * Created: 2025-09-12 오후 11:36:43
  *  Author: User
  */ 
-#include "_74595.h"
+#include "_74hc595.h"
 
 //비트패턴
 uint8_t pattern[] = {0x03, 0x9F, 0x25, 0x0D, 0x99, 0x49, 0x41, 0x1F, 0x01, 0x09}; //숫자패턴 0~9를 미리 배열에 미리 저장해둠
@@ -15,6 +15,7 @@ timer_ms _7_segment_delay_timer;
 timer_ms segment_display_timer;  // 세그먼트 디스플레이용 타이머 추가
 timer_ms buzzer_timer;          // 부저용 별도 타이머 추가
 uint8_t _3sec_counter = 3; //첫 선언문 실행시에만 초기화됨
+STATE next_state_of_INIT = IDLE;
 
 
 
@@ -44,11 +45,27 @@ void timer_reset_74595() {
 	buzzer_timer .is_init_done=0;
 }
 
+void set_74595_next_state_of_INIT(STATE next_state) {
+	switch(next_state) {
+		case RUNNING:
+			next_state_of_INIT = RUNNING;
+			break;
+		case PROGRAM_A: 
+			next_state_of_INIT = PROGRAM_A;
+			break;
+		default:
+			UART_printString("Unknown next_state_of_INIT\n" );
+			break;
+
+	}
+}
+
 void print_7_segment() {
 	static uint16_t min = 0;
 	static uint8_t display_digit = 0;  // 현재 표시할 자릿수
 	int i = 0;
 	static uint16_t buzzer_duration = 0;  // 부저 지속 시간 카운터
+
 
 	switch(current_state) {
 
@@ -78,12 +95,25 @@ void print_7_segment() {
 			
 			if(_3sec_counter == 0) {
 				_3sec_counter = 3;
-				buzzer_duration = 0;
+				buzzer_duration = 0; 
 				segment_display_timer.is_init_done = 0; 
 				min = 0; //idle에서 running으로 변할때 실행되므로, 여기서 min을 0으로 초기화
 				for(i=0;i<4;i++) num_digits[i]=0; //RUNNING으로 바뀌기 전에 이전 RUNNING 단계에 사용된 num_digits을 0으로 초기화해준다.
-				current_state = RUNNING;
-				UART_printString("STATE CHANGED : INIT -> RUNNING\n");
+				switch(next_state_of_INIT) {
+					case RUNNING:
+						current_state = RUNNING;
+						UART_printString("STATE CHANGED : INIT -> RUNNING\n");
+					
+						break;
+					case PROGRAM_A:
+						current_state = PROGRAM_A;
+						UART_printString("STATE CHANGED : INIT -> PROGRAM_A\n");				
+						break;
+					default : 
+						UART_printString("Unknown next_state_of_INIT\n");
+						break;
+				}
+
 			}
 			break;
 		case IDLE:
@@ -94,8 +124,9 @@ void print_7_segment() {
 			}
 			break;
 
-		case RUNNING:
-			if(timer_delay_s(&_7_segment_timer, 1) && current_state == RUNNING) {
+		case RUNNING: //RUNNING 또는 PROGRAM_A 상태일 때 실행
+		case PROGRAM_A:
+			if(timer_delay_s(&_7_segment_timer, 1) && (current_state == RUNNING || current_state == PROGRAM_A)) {
 				 min++;  //1초 지나는걸 타이머로 측정하여 1초당 1분을 증가시킴. 원래는 60초당 1분으로 하는게 맞는데 시연을 위해 1분을 1초로 가정
 				UART_printString("1_sec_timer_expired, changing segment number\n");
 				UART_printString("min: ");
@@ -116,7 +147,7 @@ void print_7_segment() {
 
 		case EMERGENCY_STOP: // Emergency stop 로직 구현 필요
 			if(timer_delay_ms(&segment_display_timer, SEGMENT_DELAY)) {
-				WordDataWrite(make_16bit_protocol(display_digit, num_digits[display_digit]) | (1 << RED) | (1 << GREEN));
+				WordDataWrite(make_16bit_protocol(display_digit, num_digits[display_digit]) | (1 << BLUE) | (1 << GREEN));
 				display_digit = (display_digit + 1) % 4;  // 0~3 순환
 			}
 			break;
