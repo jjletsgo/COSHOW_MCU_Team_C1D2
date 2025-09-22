@@ -18,11 +18,10 @@ static uint8_t lcd_backlight = LCD_BL;
 timer_s encoder_timer;
 volatile uint8_t count = 0;
 volatile uint16_t dist = 0;
-volatile uint16_t cal = 0;
 static uint8_t vel = 1;
 static uint8_t deg = 1;
 static uint8_t col_v = 2, col_d = 10;
-static bool status = false;
+//static bool status = false;
 
 static STATE last_state = -1;
 static timer_s init_msg_timer;
@@ -174,8 +173,9 @@ void lcd_print_int(uint16_t value) {
 
 
 void lcd_print_float(float value) {
-   uint8_t whole = (uint8_t)value;
+   uint16_t whole = (uint16_t)value;
    uint8_t frac  = (uint8_t)((value - (float)whole) * 10.0f);
+ 
    
    lcd_print_int(whole);
    lcd_print_str(".");
@@ -223,15 +223,15 @@ void lcd_angle_down(void){
    }
 }
 
-
+/*
 void lcd_button_on(void){
    if (status){
       status = false;
       vel = 1, deg = 1;
       col_v = 2, col_d = 10;
-      
+     
       dist = 0;
-      cal = 0;
+      //cal = 0;
       
    }
    else{
@@ -239,6 +239,7 @@ void lcd_button_on(void){
       encoder_timer.is_init_done = 0;
    }
 }
+*/
 
 void lcd_print_level(void){
    lcd_set_cursor(0,0);
@@ -253,6 +254,8 @@ void lcd_print_level(void){
 }
 
 void lcd_print_info(void){
+	static uint16_t cal = 0;
+
    if (current_state != RUNNING) {
       return;
    }
@@ -261,8 +264,8 @@ void lcd_print_info(void){
       // 1. 값 계산
       count = encoder_read();
       UART_print8bitNumber(count);
-      dist += (uint16_t)(count * 2 * DIAMETER * 3) / 100;
-      cal += 70 * (dist/100);
+      dist += (uint16_t)(count * 2 * DIAMETER * 3) / 100;		// 미터 단위
+      cal = (70 * dist)/1000;
 
       // 2. 화면 업데이트
       lcd_set_cursor(0, 1);
@@ -271,7 +274,7 @@ void lcd_print_info(void){
       lcd_print_int(dist);
 
       lcd_set_cursor(8, 1);
-      lcd_print_str("CAL:    "); 
+      lcd_print_str("CAL:    ");		// kcal 단위
       lcd_set_cursor(12, 1);
       lcd_print_int(cal);
    }
@@ -286,6 +289,9 @@ void lcd_state_change(void)
       switch (current_state) {
          case (INIT):
          case (IDLE):
+		 vel = 1, deg = 1;
+		 col_v = 2, col_d = 10;
+		 dist = 0;
          lcd_clear();
          lcd_print_str("Initializing...");
          init_msg_timer.is_init_done = 0; // 1초 타이머 리셋
@@ -295,6 +301,7 @@ void lcd_state_change(void)
          case RUNNING:
          lcd_clear();
          lcd_print_level();
+		 encoder_timer.is_init_done = 0;
          break;
          
          default:

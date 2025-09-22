@@ -38,7 +38,7 @@ void motor_dc_setup(void){
 
 // level 입력받아 pwm 출력
 void motor_dc_start(uint8_t speed_level)
-{	
+{
 	uint8_t pwm = pwm_setup(speed_level);
 	OCR2A = pwm;
 }
@@ -51,7 +51,7 @@ void motor_dc_stop(void)
 	speed_level = 0;
 	
 	for (int i =speed_pwm; i>=0; i--){
-		OCR2A = i;	
+		OCR2A = i;
 	}
 	
 	TCCR2A &= ~(1 << COM2A1);

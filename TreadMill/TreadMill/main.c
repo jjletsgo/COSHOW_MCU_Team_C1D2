@@ -85,7 +85,7 @@ int main(void){
             break;
          case BUTTON_ON_OFF:
             //UART_printString("BUTTON_ON_OFF is pushed\n");
-            lcd_button_on();
+            //lcd_button_on();
             if(current_state == IDLE) {
 				timer_reset_74595();
 
@@ -151,8 +151,8 @@ int main(void){
 	}
 	
 	else if ((current_state == EMERGENCY_STOP) && (load_active) && !emergency_trigger){
-		 current_state = IDLE;
-		 UART_printString("IDLE");
+		current_state = IDLE;
+		UART_printString("IDLE");
 	}
 	
    }

@@ -50,7 +50,7 @@ void lcd_speed_up(void);
 void lcd_speed_down(void);
 void lcd_angle_up(void);
 void lcd_angle_down(void);
-void lcd_button_on(void);
+//void lcd_button_on(void);
 
 void lcd_print_level(void);
 void lcd_print_info (void);
