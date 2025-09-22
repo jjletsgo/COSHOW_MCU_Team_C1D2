@@ -50,17 +50,16 @@ bool load_cell_status(int32_t offset){
    int32_t net_value = raw_value - offset;
    float weight = load_cell_convert(net_value);
    
-   if(weight < 10.0 && weight > -10.0){
+   if(weight < 5.0 && weight > -5.0){
       return false;
    }
    else return true;
 }
 
+
 bool load_cell_status_check(int32_t offset) {
 	static timer_s load_cell_timer = {0, 0}; // 타이머 초기화
 	static bool last_status = false; // 마지막 상태 저장
-	int32_t raw_value = load_cell_read();
-	int32_t net_value = raw_value - offset;
 
 	if (timer_delay_s(&load_cell_timer, 1)) { // 1초마다 실행
 		last_status = load_cell_status(offset);

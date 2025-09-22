@@ -15,6 +15,8 @@
 #include "_74hc595.h"
 #include "load_cell.h"
 #include "emergency_stop.h"
+#include "timer_0.h"
+
 #include <util/delay.h>
 int32_t load_offset = 0;
 bool load_active = false;
@@ -53,10 +55,9 @@ int main(void){
 
       uint16_t adc_value = read_ADC();
       Button_t pressed = Button_ADC_getPressed(adc_value);
-	   load_active = load_cell_status_check(load_offset);
+	  load_active = load_cell_status_check(load_offset);
 
       if (pressed != BUTTON_NONE) { // 버튼 1개라도 눌리면 실행됨. 버튼 안눌리면 실행 x
-         //lcd_print_all(pressed);
 
 		switch(pressed) {
 			case BUTTON_SPEED_UP:
@@ -140,18 +141,21 @@ int main(void){
      lcd_print_info();
      motor_step_update();
 	
-	/* 
+	
+	
 	if((current_state == RUNNING) && !(load_active)) 
 	{
 		current_state = EMERGENCY_STOP;
-		UART_printString("EMERGENCY_STOP");
+		//current_state = IDLE;
+		// UART_printString("EMERGENCY_STOP");
 	}
-	else if ((current_state == EMERGENCY_STOP) && (load_active)){
+	
+	else if ((current_state == EMERGENCY_STOP) && (load_active) && !emergency_trigger){
 		 current_state = IDLE;
 		 UART_printString("IDLE");
 	}
-	*/
+	
    }
-   return 1;
+	return 1;
    
 }

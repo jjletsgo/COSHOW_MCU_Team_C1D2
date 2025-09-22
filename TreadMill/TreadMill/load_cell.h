@@ -21,6 +21,7 @@
 
 // 보정 계수
 #define WEIGHT_FACTOR 7050.0
+#define WEIGHT_SAMPLE_COUNT 10
 
 // 함수 프로토타입
 void load_cell_init(void);

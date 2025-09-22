@@ -6,5 +6,5 @@
 
 void emergency_stop_init(void);
 bool load_cell_emergency(void);
-
+extern bool emergency_trigger;
 #endif
