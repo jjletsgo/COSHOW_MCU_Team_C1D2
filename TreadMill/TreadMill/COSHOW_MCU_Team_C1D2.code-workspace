@@ -1,0 +1,21 @@
+{
+	"folders": [
+		{
+			"path": "../.."
+		}
+	],
+	"settings": {
+		"files.associations": {
+			"timer_1.h": "c",
+			"step_motor.h": "c",
+			"button.h": "c",
+			"motor_dc.h": "c",
+			"stdint.h": "c",
+			"common.h": "c",
+			"uart.h": "c",
+			"motor_step.h": "c",
+			"_7_segment.h": "c",
+			"timer_0.h": "c"
+		}
+	}
+}

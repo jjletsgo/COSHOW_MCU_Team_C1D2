@@ -16,6 +16,7 @@
 #include "load_cell.h"
 #include "emergency_stop.h"
 #include "timer_0.h"
+//#include "program_mode.h"
 
 #include <util/delay.h>
 int32_t load_offset = 0;
@@ -62,40 +63,58 @@ int main(void){
 		switch(pressed) {
 			case BUTTON_SPEED_UP:
             UART_printString("BUTTON_SPPED_UP is pushed\n");
-            lcd_speed_up();
-            motor_dc_up();
+			if (speed_level < LEVEL_MAX && current_state==RUNNING){
+				speed_level++;
+				motor_dc_change();
+				lcd_speed_up();
+			}
+
             break;
          case BUTTON_SPEED_DOWN:
             UART_printString("BUTTON_SPPED_DOWN is pushed\n");
-            lcd_speed_down();
-            motor_dc_down();
+			if (speed_level > LEVEL_MIN && current_state==RUNNING){
+				speed_level--;
+				motor_dc_change();
+			    lcd_speed_down();
+			}
             break;
          case BUTTON_ANGLE_UP:
             UART_printString("BUTTON_ANGLE_UP is pushed\n");
-			   motor_step_up();
-            lcd_angle_up();
+			if (angle_level < LEVEL_MAX && current_state==RUNNING){
+				angle_level++;
+				motor_step_change(angle_level, STEP_UP);
+		        lcd_angle_up();
+			}
             break;
          case BUTTON_ANGLE_DOWN:
             UART_printString("BUTTON_ANGLE_DOWN is pushed\n");
-			   motor_step_down();
-            lcd_angle_down();
+			if (angle_level > LEVEL_MIN && current_state==RUNNING){
+				angle_level--;
+				motor_step_change(angle_level, STEP_DOWN);
+				lcd_angle_down();
+			}
 			break;
-			case BUTTON_PROGRAM_A:
-			
+		 case BUTTON_PROGRAM_A:
+				timer_reset_74595();
+				current_state = INIT;
+				//select_program(LOSE_MY_MIND);		// 원하는 곡 선택
+				set_74595_next_state_of_INIT(PROGRAM_A);
+
             break;
          case BUTTON_ON_OFF:
             //UART_printString("BUTTON_ON_OFF is pushed\n");
-            //lcd_button_on();
             if(current_state == IDLE) {
 				timer_reset_74595();
-
 				current_state = INIT; //상태를 INIT으로 변경
-
+				set_74595_next_state_of_INIT(RUNNING);
             }
-            else if (current_state == RUNNING) {
+            else if ((current_state == RUNNING) || (current_state == PROGRAM_A)) {
 				timer_reset_74595();
 				motor_dc_stop();
-				motor_step_stop();
+				//program_stop();
+				turn_off = true;
+				motor_step_change(angle_level, STEP_DOWN);
+				turn_off = false;
                 current_state = IDLE; // 상태를 IDLE로 변경
             }
             break;
@@ -115,47 +134,57 @@ int main(void){
 		     UART_printString("INIT!!!!\n");
 		     motor_dc_init();
 			 motor_step_init(STEP_HALF_STEP);
+			 speed_level=0;
+			 angle_level=1;
 
 		     break;
 		     case RUNNING :
 		     UART_printString("RUNNING!!!!\n");
+			 speed_level=1;
 		     motor_dc_setup();
 		     break;
 			 
 		     case EMERGENCY_STOP :
 		     UART_printString("EMERGENCY_STOP\n");
 		     motor_dc_stop();
-		     motor_step_stop();
+			 //program_stop();
+			 turn_off = true;
+			 motor_step_change(angle_level, STEP_DOWN);
+			 turn_off = false;
+			 speed_level=0;
+			 angle_level=1;
 			 
 		     break;
            case PROGRAM_A :
 		     UART_printString("PROGRAM_A!!!!\n");
+			 //program_init();
 		     motor_dc_setup();
 		     break;
 	     }
      }
      previous_state = current_state;
-	  
+	 
+	  	if(((current_state == RUNNING) || (current_state == PROGRAM_A)) && !(load_active))
+	  	{
+		  	current_state = EMERGENCY_STOP;
+	  	}
+	  	
+	  	else if ((current_state == EMERGENCY_STOP) && (load_active) && !emergency_trigger){
+		  	current_state = IDLE;
+	  	}
+		/*
+		if (current_state == PROGRAM_A){
+			program_play();
+		}
+		*/
+		
      print_7_segment();//7세그먼트 동작
 	 lcd_state_change();
      lcd_print_info();
+	 lcd_print_program();
      motor_step_update();
 	
-	
-	
-	if((current_state == RUNNING) && !(load_active)) 
-	{
-		current_state = EMERGENCY_STOP;
-		//current_state = IDLE;
-		// UART_printString("EMERGENCY_STOP");
-	}
-	
-	else if ((current_state == EMERGENCY_STOP) && (load_active) && !emergency_trigger){
-		current_state = IDLE;
-		UART_printString("IDLE");
-	}
-	
-   }
-	return 1;
+}
+return 1;
    
 }

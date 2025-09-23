@@ -28,10 +28,8 @@ static volatile uint32_t g_remaining_steps = 0;
 static volatile int8_t g_current_seq_idx = 0;
 
 timer_ms step_timer = {0, 0};  // 타이머 구조체 초기화
-volatile uint8_t angle_level = 1;
 volatile uint8_t value = 0;
 volatile int32_t steps = 0;
-volatile bool turn_off = false;
 
 // 시퀀스 테이블
 static const uint8_t FULL_SEQ[4] = {
@@ -143,29 +141,28 @@ void step_set_speed_rpm(uint16_t rpm)
 // 스텝모터 동작 시작 함수
 void motor_step_change(uint8_t level, step_dir_t dir)
 {
-	uint32_t target_steps = 0;
+	if (g_state == STEP_IDLE) {
+		step_set_speed_rpm(10);
+		uint32_t target_steps = 0;
 	
-	if (turn_off == true) {
-		if (level == 1) return;
-		else {
-			target_steps = (level-1) * STEP_ANGLE;
+		if (turn_off == true) {
+			if (level == 1) return;
+			else {
+				target_steps = (level-1) * STEP_ANGLE;
+			}
 		}
-	}
-	else if (1 <= level && level <= 5) {
-		target_steps = STEP_ANGLE;
-	}
-	else {
-		angle_level = clamp_level(level);
-		return;
-	}
+		else {
+			target_steps = STEP_ANGLE;
+		}
 	
-	// 스텝모터 파라미터 설정
-	g_direction = dir;
-	g_remaining_steps = target_steps;
-	g_state = STEP_RUNNING;
+		// 스텝모터 파라미터 설정
+		g_direction = dir;
+		g_remaining_steps = target_steps;
+		g_state = STEP_RUNNING;
 	
-	// 타이머 초기화
-	step_timer.is_init_done = 0;
+		// 타이머 초기화
+		step_timer.is_init_done = 0;
+	}
 }
 
 // 코일 해제
@@ -173,35 +170,6 @@ void step_release(void)
 {
 	coils_write(0);
 	g_state = STEP_IDLE;
-}
-
-// 스텝모터 정지
-void motor_step_stop(void)
-{
-	turn_off = true;
-	motor_step_change(angle_level, STEP_DOWN);
-	turn_off = false;
-	angle_level = 1;
-}
-
-// 스텝모터 위로
-void motor_step_up(void)
-{
-	if (g_state == STEP_IDLE) {  // 정지 상태일 때만 실행
-		step_set_speed_rpm(10);
-		angle_level++;
-		motor_step_change(angle_level, STEP_UP);
-	}
-}
-
-// 스텝모터 아래로
-void motor_step_down(void)
-{
-	if (g_state == STEP_IDLE) {  // 정지 상태일 때만 실행
-		step_set_speed_rpm(10);
-		angle_level--;
-		motor_step_change(angle_level, STEP_DOWN);
-	}
 }
 
 // 스텝모터가 동작 중인지 확인하는 함수

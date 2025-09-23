@@ -14,18 +14,17 @@
 #include "encoder.h"
 #define DIAMETER 2
 
+
 static uint8_t lcd_backlight = LCD_BL;
 timer_s encoder_timer;
 volatile uint8_t count = 0;
 volatile uint16_t dist = 0;
-static uint8_t vel = 1;
-static uint8_t deg = 1;
 static uint8_t col_v = 2, col_d = 10;
-//static bool status = false;
-
+static uint8_t previous_ang = 1, previous_spd = 1;
 static STATE last_state = -1;
 static timer_s init_msg_timer;
 static bool init_msg = false;
+timer_s program_timer;
 
 void i2c_init(void) {
    TWSR = 0x00; // prescaler = 1
@@ -60,11 +59,9 @@ void lcd_set_ctrl(uint8_t data) {
 void lcd_pulse_enable(uint8_t data) {
    i2c_start(LCD_I2C_ADDR);
    i2c_write((data | LCD_EN) | lcd_backlight);
-   //_delay_us(1);
    
    i2c_write((data & ~LCD_EN) | lcd_backlight);
    i2c_stop();
-   //_delay_us(50);
 }
 
 void lcd_write4(uint8_t nibble, uint8_t mode_rs) {
@@ -81,12 +78,6 @@ void lcd_send(uint8_t value, uint8_t mode_rs) {
 
 void lcd_command(uint8_t cmd) {
    lcd_send(cmd, 0);
-   
-   /*
-   if (cmd == 0x01 || cmd == 0x02) {
-      _delay_ms(2);
-   }
-   */
 }
 
 
@@ -139,7 +130,6 @@ void lcd_init(void) {
    _delay_us(50);
    lcd_command(0x28);      // 4bit, 2line, 5x8
    lcd_command(0x08);      // display off
-   //lcd_clear();
    lcd_command(0x06);      // entry mode set
    lcd_command(0x0C);      // display on
    lcd_clear();
@@ -173,9 +163,8 @@ void lcd_print_int(uint16_t value) {
 
 
 void lcd_print_float(float value) {
-   uint16_t whole = (uint16_t)value;
+   uint8_t whole = (uint8_t)value;
    uint8_t frac  = (uint8_t)((value - (float)whole) * 10.0f);
- 
    
    lcd_print_int(whole);
    lcd_print_str(".");
@@ -184,62 +173,51 @@ void lcd_print_float(float value) {
 
 void lcd_speed_up(void)
 {   
-   if (current_state != RUNNING) return;
-   if (vel < LEVEL_MAX){
-      vel++;
-      col_v ++;
-      lcd_set_cursor(col_v, 0);
-      lcd_write_char(0);
-   }
+   col_v ++;
+   lcd_set_cursor(col_v, 0);
+   lcd_write_char(0);
 }
 
 void lcd_speed_down(void){
-   if (current_state != RUNNING) return;
-   if (vel > LEVEL_MIN){
-      vel --;
-      lcd_set_cursor(col_v, 0);
-      lcd_write_char(' ');
-      col_v --;
-   }
+   lcd_set_cursor(col_v, 0);
+   lcd_write_char(' ');
+   col_v --;
 }
 
 void lcd_angle_up(void){
-   if (current_state != RUNNING) return;
-   if (deg < LEVEL_MAX){
-      deg ++;
-      col_d ++;
-      lcd_set_cursor(col_d, 0);
-      lcd_write_char(0);
-   }
+   col_d ++;
+   lcd_set_cursor(col_d, 0);
+   lcd_write_char(0);
 }
 
 void lcd_angle_down(void){
-   if (current_state != RUNNING) return;
-   if (deg > LEVEL_MIN ){
-      deg --;
-      lcd_set_cursor(col_d, 0);
-      lcd_write_char(' ');
-      col_d --;
-   }
+   lcd_set_cursor(col_d, 0);
+   lcd_write_char(' ');
+   col_d --;
 }
 
-/*
-void lcd_button_on(void){
-   if (status){
-      status = false;
-      vel = 1, deg = 1;
-      col_v = 2, col_d = 10;
-     
-      dist = 0;
-      //cal = 0;
-      
-   }
-   else{
-      status = true;
-      encoder_timer.is_init_done = 0;
-   }
+void lcd_print_program(void){
+	static uint8_t i = 0;
+	if(current_state != PROGRAM_A) return;
+	if ((previous_ang != angle_level) || (previous_spd != speed_level)) {
+		lcd_set_cursor(2, 0);
+		lcd_print_str("     "); // 기존 내용 지우기
+		lcd_set_cursor(2, 0);
+		for (i = 0; i < speed_level; i++) {
+			lcd_write_char(0);
+		}
+
+		lcd_set_cursor(10, 0);
+		lcd_print_str("     "); // 기존 내용 지우기
+		lcd_set_cursor(10, 0);
+		for (i = 0; i < angle_level; i++) {
+			lcd_write_char(0);
+		}
+		previous_spd = speed_level;
+		previous_ang = angle_level;
+	}
 }
-*/
+
 
 void lcd_print_level(void){
    lcd_set_cursor(0,0);
@@ -256,28 +234,27 @@ void lcd_print_level(void){
 void lcd_print_info(void){
 	static uint16_t cal = 0;
 
-   if (current_state != RUNNING) {
-      return;
-   }
-   
-   if (timer_delay_s(&encoder_timer, 1)){
-      // 1. 값 계산
-      count = encoder_read();
-      UART_print8bitNumber(count);
-      dist += (uint16_t)(count * 2 * DIAMETER * 3) / 100;		// 미터 단위
-      cal = (70 * dist)/1000;
+	if (current_state != RUNNING && current_state != PROGRAM_A) {
+		return;
+	}
+	
+	if (timer_delay_s(&encoder_timer, 1)){
+		// 1. 값 계산
+		count = encoder_read();
+		dist += (uint16_t)(count * 2 * DIAMETER * 3) / 100;      // 미터 단위
+		cal = (70 * dist)/1000;
 
-      // 2. 화면 업데이트
-      lcd_set_cursor(0, 1);
-      lcd_print_str("D:      "); 
-      lcd_set_cursor(2, 1);
-      lcd_print_int(dist);
+		// 2. 화면 업데이트
+		lcd_set_cursor(0, 1);
+		lcd_print_str("D:      ");
+		lcd_set_cursor(2, 1);
+		lcd_print_int(dist);
 
-      lcd_set_cursor(8, 1);
-      lcd_print_str("CAL:    ");		// kcal 단위
-      lcd_set_cursor(12, 1);
-      lcd_print_int(cal);
-   }
+		lcd_set_cursor(8, 1);
+		lcd_print_str("CAL:    ");      // kcal 단위
+		lcd_set_cursor(12, 1);
+		lcd_print_int(cal);
+	}
 }
 
 void lcd_state_change(void)
@@ -289,20 +266,21 @@ void lcd_state_change(void)
       switch (current_state) {
          case (INIT):
          case (IDLE):
-		 vel = 1, deg = 1;
-		 col_v = 2, col_d = 10;
-		 dist = 0;
+       col_v = 2, col_d = 10;
+       dist = 0;
          lcd_clear();
          lcd_print_str("Initializing...");
          init_msg_timer.is_init_done = 0; // 1초 타이머 리셋
          init_msg = true;   // 메시지 표시 중 플래그 활성화
          break;
          
-         case RUNNING:
-         lcd_clear();
-         lcd_print_level();
+		 case RUNNING:
+	 	 case PROGRAM_A:
+	  	 lcd_clear();
+		 lcd_print_level();
 		 encoder_timer.is_init_done = 0;
-         break;
+		 program_timer.is_init_done = 0;
+		 break;
          
          default:
          lcd_clear();

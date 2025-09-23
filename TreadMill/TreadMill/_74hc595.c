@@ -15,7 +15,7 @@ timer_ms _7_segment_delay_timer;
 timer_ms segment_display_timer;  // 세그먼트 디스플레이용 타이머 추가
 timer_ms buzzer_timer;          // 부저용 별도 타이머 추가
 uint8_t _3sec_counter = 3; //첫 선언문 실행시에만 초기화됨
-
+STATE next_state_of_INIT = IDLE;
 
 
 //16비트 프로토콜 만드는 함수
@@ -42,6 +42,21 @@ void timer_reset_74595() {
 	_7_segment_delay_timer.is_init_done=0;
 	segment_display_timer.is_init_done=0;
 	buzzer_timer .is_init_done=0;
+}
+
+void set_74595_next_state_of_INIT(STATE next_state) {
+	switch(next_state) {
+		case RUNNING:
+		next_state_of_INIT = RUNNING;
+		break;
+		case PROGRAM_A:
+		next_state_of_INIT = PROGRAM_A;
+		break;
+		default:
+		UART_printString("Unknown next_state_of_INIT\n" );
+		break;
+
+	}
 }
 
 void print_7_segment() {
@@ -82,8 +97,19 @@ void print_7_segment() {
 				segment_display_timer.is_init_done = 0; 
 				min = 0; //idle에서 running으로 변할때 실행되므로, 여기서 min을 0으로 초기화
 				for(i=0;i<4;i++) num_digits[i]=0; //RUNNING으로 바뀌기 전에 이전 RUNNING 단계에 사용된 num_digits을 0으로 초기화해준다.
-				current_state = RUNNING;
-				UART_printString("STATE CHANGED : INIT -> RUNNING\n");
+				switch(next_state_of_INIT) {
+					case RUNNING:
+					current_state = RUNNING;
+					UART_printString("STATE CHANGED : INIT -> RUNNING\n");
+					break;
+					case PROGRAM_A:
+					current_state = PROGRAM_A;
+					UART_printString("STATE CHANGED : INIT -> PROGRAM_A\n");
+					break;
+					default :
+					UART_printString("Unknown next_state_of_INIT\n");
+					break;
+				}
 			}
 			break;
 		case IDLE:
@@ -93,11 +119,31 @@ void print_7_segment() {
 				display_digit = (display_digit + 1) % 4;  // 0~3 순환
 			}
 			break;
+			
+		case PROGRAM_A:
+		if(timer_delay_s(&_7_segment_timer, 1) && (current_state == RUNNING || current_state == PROGRAM_A)) {
+			min++;  //1초 지나는걸 타이머로 측정하여 1초당 1분을 증가시킴. 원래는 60초당 1분으로 하는게 맞는데 시연을 위해 1분을 1초로 가정
+			UART_printString("1_sec_timer_expired, changing segment number\n");
+			UART_printString("min: ");
+			UART_print8bitNumber(min);
+			UART_printString("\n");
+			num_digits[0] = min / 60 / 10; //시간의 십의 자리
+			num_digits[1] = min / 60 % 10; // 시간의 일의 자리
+			num_digits[2] = (min % 60) / 10; //분의 십의 자리
+			num_digits[3] = (min % 60) % 10; //분의 일의 자리
+		}
+		
+		// 타이머 기반으로 순차 디스플레이
+		if(timer_delay_ms(&segment_display_timer, SEGMENT_DELAY)) {
+			WordDataWrite(make_16bit_protocol(display_digit, num_digits[display_digit]) | (1 << RED) | (1 << GREEN));
+			display_digit = (display_digit + 1) % 4;  // 0~3 순환
+		}
+		break;
 
 		case RUNNING:
 			if(timer_delay_s(&_7_segment_timer, 1) && current_state == RUNNING) {
 				 min++;  //1초 지나는걸 타이머로 측정하여 1초당 1분을 증가시킴. 원래는 60초당 1분으로 하는게 맞는데 시연을 위해 1분을 1초로 가정
-				UART_printString("1_sec_timer_expired, changing segment number\n");
+				//UART_printString("1_sec_timer_expired, changing segment number\n");
 				//UART_printString("min: ");
 				//UART_print8bitNumber(min);
 				//UART_printString("\n");

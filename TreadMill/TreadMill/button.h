@@ -37,30 +37,4 @@ Button_t Button_ADC_getPressed(uint16_t ADC_val);     // 디바운싱된 버튼 
 Button_t Button_ADC_getDebounced(uint16_t ADC_val);
 void Button_Init(void);                           // 초기화
 
-
-// 각 버튼에 대한 레벨을 저장하기 위한 함수 부분
-
-#define LEVEL_MIN 1 // 최소레벨 1
-#define LEVEL_MAX 5 // 최대레벨 5
-
-#define SPEED_TABLE {0, 35, 38, 42, 45, 48} // Level 값과 동일화하기 위해서 index 0은 미사용
-
-extern volatile uint8_t speed_level; // 사용하고자 하는 c 코드에서 초기화 필요, 속도 레벨(1~5)
-extern volatile uint8_t angle_level; // 사용하고자 하는 c 코드에서 초기화 필요, 기울기 레벨(1~5)
-
-extern const uint8_t SpeedPwm[LEVEL_MAX + 1]; //사용하고자 하는 c 코드에서 위의 SPEED_TABLE 불러와서 리스트로 정의
-
-// 최소, 최대 레벨 제한
-static inline uint8_t clamp_level(uint8_t level){
-
-    if (level > LEVEL_MAX) return LEVEL_MAX;
-    if (level < LEVEL_MIN) return LEVEL_MIN;
-    return level;    
-}
-
-//level -> pwm 변환 함수
-static inline uint8_t pwm_setup(uint8_t level){
-	return SpeedPwm[clamp_level(level)];
-}
-
 #endif /* BUTTON_H_ */

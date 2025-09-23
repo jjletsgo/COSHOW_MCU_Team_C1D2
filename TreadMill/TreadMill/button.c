@@ -13,6 +13,9 @@ static Button_t lastRead = BUTTON_NONE;
 static Button_t lastStable = BUTTON_NONE;  // 누락된 초기화 추가
 static uint8_t count = 0;                  // 누락된 카운터 변수 추가
 
+uint8_t speed_level = 0;
+uint8_t angle_level = 0;
+
 // =============================
 // 버튼 상태 판별 (Raw ADC 값)
 // =============================

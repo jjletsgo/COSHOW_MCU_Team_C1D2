@@ -34,6 +34,7 @@ void LatchClock(void);
 void WordDataWrite(uint16_t data);
 uint16_t make_16bit_protocol (uint8_t digit_num, uint8_t num);
 void print_7_segment();
+void set_74595_next_state_of_INIT(STATE state);
 
 
 
