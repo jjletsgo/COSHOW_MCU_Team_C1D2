@@ -7,6 +7,7 @@
 
 #include "common.h"
 
+STATE previous_state = IDLE;
 STATE current_state = IDLE;  
 
 volatile bool turn_off = false; 
