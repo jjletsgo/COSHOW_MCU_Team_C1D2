@@ -16,7 +16,7 @@
 #include "load_cell.h"
 #include "emergency_stop.h"
 #include "timer_0.h"
-//#include "program_mode.h"
+#include "program_mode.h"
 
 #include <util/delay.h>
 int32_t load_offset = 0;
@@ -53,7 +53,7 @@ int main(void){
    
    
    while(1){
-
+	
       uint16_t adc_value = read_ADC();
       Button_t pressed = Button_ADC_getPressed(adc_value);
 	  load_active = load_cell_status_check(load_offset);
@@ -97,7 +97,6 @@ int main(void){
 		 case BUTTON_PROGRAM_A:
 				timer_reset_74595();
 				current_state = INIT;
-				//select_program(LOSE_MY_MIND);		// 원하는 곡 선택
 				set_74595_next_state_of_INIT(PROGRAM_A);
 
             break;
@@ -111,7 +110,7 @@ int main(void){
             else if ((current_state == RUNNING) || (current_state == PROGRAM_A)) {
 				timer_reset_74595();
 				motor_dc_stop();
-				//program_stop();
+				program_stop();
 				turn_off = true;
 				motor_step_change(angle_level, STEP_DOWN);
 				turn_off = false;
@@ -123,6 +122,8 @@ int main(void){
             break;
          }
       }
+	  
+	  
      if(current_state != previous_state) {
 	     
 	     switch(current_state) {
@@ -147,7 +148,7 @@ int main(void){
 		     case EMERGENCY_STOP :
 		     UART_printString("EMERGENCY_STOP\n");
 		     motor_dc_stop();
-			 //program_stop();
+			 program_stop();
 			 turn_off = true;
 			 motor_step_change(angle_level, STEP_DOWN);
 			 turn_off = false;
@@ -157,7 +158,7 @@ int main(void){
 		     break;
            case PROGRAM_A :
 		     UART_printString("PROGRAM_A!!!!\n");
-			 //program_init();
+			 program_init();
 		     motor_dc_setup();
 		     break;
 	     }
@@ -169,14 +170,14 @@ int main(void){
 		  	current_state = EMERGENCY_STOP;
 	  	}
 	  	
-	  	else if ((current_state == EMERGENCY_STOP) && (load_active) && !emergency_trigger){
+	  	else if ((current_state == EMERGENCY_STOP) && (load_active)){
 		  	current_state = IDLE;
 	  	}
-		/*
+		
 		if (current_state == PROGRAM_A){
 			program_play();
 		}
-		*/
+		
 		
      print_7_segment();//7세그먼트 동작
 	 lcd_state_change();

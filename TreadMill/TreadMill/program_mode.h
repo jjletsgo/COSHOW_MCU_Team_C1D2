@@ -5,7 +5,7 @@
  *  Author: sec
  */ 
 
-/*
+
 #ifndef PROGRAM_MODE_H_
 #define PROGRAM_MODE_H_
 
@@ -19,7 +19,7 @@ void program_init(void);
 void program_stop(void);
 void select_program(MODE select_mode);
 void program_play(void);
-*/
+
 
 
 

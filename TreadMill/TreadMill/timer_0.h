@@ -34,12 +34,12 @@ extern volatile unsigned long present_time;
 extern volatile unsigned long previous_time;
 
 typedef struct {
-    uint8_t is_init_done; // 첫 번째 호출인지 여부확인용 플래그변수 (C99 표준에서는 초기값 설정 불가)
+    uint16_t is_init_done; // 첫 번째 호출인지 여부확인용 플래그변수 (C99 표준에서는 초기값 설정 불가)
     unsigned long ms_time; // ms 시간 저장할 변수
 } timer_ms;
 
 typedef struct {
-    uint8_t is_init_done; // 첫 번째 호출인지 여부확인용 플래그변수 
+    uint16_t is_init_done; // 첫 번째 호출인지 여부확인용 플래그변수 
     unsigned long s_time; // s 시간 저장할 변수
 } timer_s;
 
@@ -48,7 +48,7 @@ void timer0_init();
 void timer0_end();
 unsigned long millis();
 uint16_t secs();  // secs() 함수 선언 추가
-uint8_t timer_delay_ms(timer_ms *timer, uint8_t ms_interval);
-uint8_t timer_delay_s(timer_s *timer, uint8_t s_interval);
+uint16_t timer_delay_ms(timer_ms *timer, uint16_t ms_interval);
+uint16_t timer_delay_s(timer_s *timer, uint16_t s_interval);
 
 #endif /* TIMER_0_H_ */

@@ -27,7 +27,6 @@ typedef enum {
 } STATE;
 
 extern STATE current_state;
-extern STATE previous_state;
 extern int32_t load_offset;
 
 // 각 버튼에 대한 레벨을 저장하기 위한 함수 부분
