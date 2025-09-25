@@ -171,7 +171,10 @@ void print_7_segment() {
 					if(timer_delay_ms(&GP_timer, LV_5_DELAY)) left_shift_rgb_mask_18_to_26();
 				break;
 				default:
-					UART_printString("Undefined speed level\n");
+					UART_printString("Undefined speed level\nCurrent speed_level is :");
+					UART_print8bitNumber(speed_level);
+					UART_printString("\n");
+					
 				break;
 
 		}

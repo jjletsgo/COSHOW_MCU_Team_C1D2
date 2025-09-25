@@ -199,21 +199,22 @@ int main(void){
 		  	current_state = IDLE;
 	  	}
 		*/
-		/*
+		
 		if (current_state == PROGRAM_A){
 			program_play();
 		}
-		*/
+		
 		print_7_segment();//7세그먼트 동작
 		lcd_state_change();
 		lcd_print_info();
 		lcd_print_program();
 		motor_step_update();
-			
+			/*
 		if(timer_delay_ms(&debug_timer, 500)) {
-				UART_print16bitNumber(current_state);
-				UART_printString("\n");
+			UART_print16bitNumber(current_state);
+			UART_printString("\n");
 		}
+		*/
      	
 
 

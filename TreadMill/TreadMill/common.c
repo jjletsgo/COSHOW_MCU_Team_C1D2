@@ -12,6 +12,8 @@ volatile STATE current_state = IDLE;
 volatile uint8_t go_to_next_state = 0;
 volatile uint8_t is_INIT_done = 0;
 volatile uint8_t rgb_mask_red_flag = 0;
+volatile uint8_t speed_level = 1; // 속도 레벨(1~5)
+volatile uint8_t angle_level = 1; // 기울기 레벨(1~5)
 
 volatile bool turn_off = false; 
 

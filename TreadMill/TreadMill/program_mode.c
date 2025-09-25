@@ -118,8 +118,58 @@ const uint8_t lose_my_mind_note[] PROGMEM = {
     EE,EE,EE,EE,S,S,EE,Q,EE,EE,EE,S,DE
 };
 
-const uint8_t lose_my_mind_speed[NUM_NOTES] PROGMEM = {0};
-const uint8_t lose_my_mind_angle[NUM_NOTES] PROGMEM = {0};
+const uint8_t lose_my_mind_speed[NUM_NOTES] PROGMEM = {5,5,5,5,5,5,5,5,5,5,
+	5,5,5,5,5,5,5,5,5,5,
+	5,5,5,5,5,5,5,5,5,5,
+	5,5,5,5,5,5,5,5,5,5,
+	5,5,5,5,5,5,5,5,5,5,
+
+	5,5,5,5,5,5,5,5,5,5,
+	5,5,5,5,5,5,5,5,5,5,
+	5,5,5,5,5,5,5,5,5,5,
+	5,5,5,5,5,5,5,5,5,5,
+	5,5,5,5,5,5,5,5,5,5,
+
+	5,5,5,5,5,5,5,5,5,5,
+	5,5,5,5,5,5,5,5,5,5,
+	5,5,5,5,5,5,5,5,5,5,
+	5,5,5,5,5,5,5,5,5,5,
+	5,5,5,5,5,5,5,5,5,5,
+
+	5,5,5,5,5,5,5,5,5,5,
+	5,5,5,5,5,5,5,5,5,5,
+	5,5,5,5,5,5,5,5,5,5,
+	5,5,5,5,5,5,5,5,5,5,
+	5,5,5,5,5,5,5,5,5,5,
+
+	5,5,5,5,5,5
+};
+const uint8_t lose_my_mind_angle[NUM_NOTES] PROGMEM = {5,5,5,5,5,5,5,5,5,5,
+	5,5,5,5,5,5,5,5,5,5,
+	5,5,5,5,5,5,5,5,5,5,
+	5,5,5,5,5,5,5,5,5,5,
+	5,5,5,5,5,5,5,5,5,5,
+
+	5,5,5,5,5,5,5,5,5,5,
+	5,5,5,5,5,5,5,5,5,5,
+	5,5,5,5,5,5,5,5,5,5,
+	5,5,5,5,5,5,5,5,5,5,
+	5,5,5,5,5,5,5,5,5,5,
+
+	5,5,5,5,5,5,5,5,5,5,
+	5,5,5,5,5,5,5,5,5,5,
+	5,5,5,5,5,5,5,5,5,5,
+	5,5,5,5,5,5,5,5,5,5,
+	5,5,5,5,5,5,5,5,5,5,
+
+	5,5,5,5,5,5,5,5,5,5,
+	5,5,5,5,5,5,5,5,5,5,
+	5,5,5,5,5,5,5,5,5,5,
+	5,5,5,5,5,5,5,5,5,5,
+	5,5,5,5,5,5,5,5,5,5,
+
+	5,5,5,5,5,5
+};
 
 
 uint16_t note_to_duration(uint8_t note){
@@ -167,8 +217,8 @@ void program_play(void){
         }
     }
 
-    uint8_t speed_level = pgm_read_byte(&lose_my_mind_speed[note_index]);
-    uint8_t angle_level = pgm_read_byte(&lose_my_mind_angle[note_index]);
+    speed_level = pgm_read_byte(&lose_my_mind_speed[note_index]);
+    angle_level = pgm_read_byte(&lose_my_mind_angle[note_index]);
 
     if (speed_level != prev_speed_level){
         motor_dc_change();

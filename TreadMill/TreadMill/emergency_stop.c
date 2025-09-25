@@ -44,7 +44,6 @@ ISR(INT0_vect)
 			// 정지
 			current_state = EMERGENCY_STOP;
 			UART_printString("Emergency detected-by ISR\n");
-			emergency_trigger = true;
 			rgb_mask_red_flag = 1;
 			// 다음은 하강엣지(FALLING)만 받도록 전환
 			expecting_rising = 0;

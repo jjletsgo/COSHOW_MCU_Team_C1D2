@@ -36,6 +36,8 @@ extern int32_t load_offset;
 extern volatile uint8_t go_to_next_state;
 extern volatile uint8_t rgb_mask_red_flag;
 
+extern volatile uint8_t speed_level; // 속도 레벨(1~5)
+extern volatile uint8_t angle_level; // 기울기 레벨(1~5)
 
 // 각 버튼에 대한 레벨을 저장하기 위한 함수 부분
 
@@ -44,8 +46,6 @@ extern volatile uint8_t rgb_mask_red_flag;
 
 #define SPEED_TABLE {0, 35, 38, 42, 45, 48} // Level 값과 동일화하기 위해서 index 0은 미사용
 
-extern  uint8_t speed_level; // 속도 레벨(1~5)
-extern  uint8_t angle_level; // 기울기 레벨(1~5)
 
 extern const uint8_t SpeedPwm[LEVEL_MAX + 1]; //사용하고자 하는 c 코드에서 위의 SPEED_TABLE 불러와서 리스트로 정의
 
