@@ -6,11 +6,12 @@
  */ 
 
 #include "common.h"
-STATE next_state = IDLE;
-STATE previous_state = IDLE;
-STATE current_state = IDLE;  
-uint8_t go_to_next_state = 0;
-uint8_t is_INIT_done = 0;
+volatile STATE next_state = IDLE;
+volatile STATE previous_state = IDLE;
+volatile STATE current_state = IDLE;  
+volatile uint8_t go_to_next_state = 0;
+volatile uint8_t is_INIT_done = 0;
+volatile uint8_t rgb_mask_red_flag = 0;
 
 volatile bool turn_off = false; 
 

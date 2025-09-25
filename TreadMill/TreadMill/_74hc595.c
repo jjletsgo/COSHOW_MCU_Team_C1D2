@@ -68,19 +68,6 @@ void timer_reset_74595() {
 	segment_display_timer.is_init_done=0;
 }
 
-void set_74595_next_state_of_INIT(STATE next_state) {
-	switch(next_state) {
-		case RUNNING:
-		next_state_of_INIT = RUNNING;
-		break;
-		case PROGRAM_A:
-		next_state_of_INIT = PROGRAM_A;
-		break;
-		default:
-		UART_printString("Unknown next_state_of_INIT\n" );
-		break;
-	}
-}
 
 
 
@@ -116,10 +103,7 @@ void print_7_segment() {
 			if(timer_delay_ms(&segment_display_timer, SEGMENT_DELAY)) {
 				if(_3sec_counter ) {  //_3sec_counter가 1 or 2 or 3 이면
 					update_12bit_segment_mask(3, _3sec_counter);
-					if(timer_delay_ms(&debug_timer, 500)) {
-						//UART_print64bitNumber(rgb_mask);
-						//UART_printString("\n");
-					}
+
 					update__64bit_protocol();
 					WordDataWrite(_64bit_protocol);
 				} 
@@ -135,6 +119,9 @@ void print_7_segment() {
 			}
 			break;
 		case IDLE:
+			if(current_state != previous_state) {
+				for(i=0;i<4;i++) num_digits[i]=0;
+			}
 			//현재 상태가 IDLE이고 현재 상태와 이전상태가 다르면 rgb_mask 초기화
 			//상태 달라졌을때만 업데이트0x07fc01ff = 0b 00000111 11111100 00000001 11111111 (Green color mask)
 			rgb_mask = 0x07fc01ff;  
@@ -154,7 +141,6 @@ void print_7_segment() {
 		//현재 상태가 RUNNING OR PROGRAM이고 현재 상태와 이전상태가 다르면 rgb_mask 초기화
 		if(current_state != previous_state) {
 			rgb_mask = 0x0783ffff;
-			UART_printString("744444444444444444444444444444444444RPRPRPRRP");
 		}
 		if(timer_delay_s(&_7_segment_timer, 1) && (current_state == RUNNING || current_state == PROGRAM_A)) {
 			min++;  //1초 지나는걸 타이머로 측정하여 1초당 1분을 증가시킴. 원래는 60초당 1분으로 하는게 맞는데 시연을 위해 1분을 1초로 가정
@@ -198,10 +184,13 @@ void print_7_segment() {
 		}
 		break;
 
-		case EMERGENCY_STOP:
+		case EMERGENCY_STOP: //previous_state가 running인데 
 			//현재 상태가 EMERGENCY_STOP이고 현재 상태와 이전상태가 다르면 rgb_mask 초기화
-			if(current_state != previous_state) rgb_mask = 0x07fffe00;  // 0b111111111111111111000000000
-				
+			if(rgb_mask_red_flag) {
+				rgb_mask = 0x07fffe00;  // 0b111111111111111111000000000
+				rgb_mask_red_flag = 0;
+				UART_printString("Emergency detected-by 74HC595\n");
+			}
 			
 			if(timer_delay_ms(&segment_display_timer, SEGMENT_DELAY)) {
 				update_12bit_segment_mask(display_digit, num_digits[display_digit]);

@@ -50,9 +50,11 @@ int main(void){
 
    load_offset = load_cell_read();		// offset 구하기
    previous_state = IDLE;
+   timer_ms debug_timer;
    
    
    while(1){	
+	   
       uint16_t adc_value = read_ADC();
       Button_t pressed = Button_ADC_getPressed(adc_value);
 	  load_active = load_cell_status_check(load_offset);
@@ -181,8 +183,12 @@ int main(void){
 		     break;
 	     }
      }
-     
-
+		
+	  	if(((current_state == RUNNING) || (current_state == PROGRAM_A)) && !(load_active))
+	  	{
+		  	current_state = IDLE;
+	  	}
+		/*
 	  	if(((current_state == RUNNING) || (current_state == PROGRAM_A)) && !(load_active))
 	  	{
 		  	current_state = EMERGENCY_STOP;
@@ -191,6 +197,7 @@ int main(void){
 	  	else if ((current_state == EMERGENCY_STOP) && (load_active) && !emergency_trigger){
 		  	current_state = IDLE;
 	  	}
+		*/
 		/*
 		if (current_state == PROGRAM_A){
 			program_play();
@@ -202,9 +209,13 @@ int main(void){
 		lcd_print_program();
 		motor_step_update();
 			
-     	previous_state = current_state;
+		if(timer_delay_ms(&debug_timer, 500)) {
+				UART_print16bitNumber(current_state);
+				UART_printString("\n");
+		}
+     	
 
- 
+		previous_state = current_state;
 	
 }
 return 1;

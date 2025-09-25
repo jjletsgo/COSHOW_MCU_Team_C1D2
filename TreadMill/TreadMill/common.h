@@ -27,13 +27,14 @@ typedef enum {
 } STATE;
 
 
-extern STATE previous_state;
-extern STATE current_state;
-extern STATE next_state;
-extern uint8_t is_INIT_done;
+extern volatile STATE previous_state;
+extern volatile STATE current_state;
+extern volatile STATE next_state;
+extern volatile uint8_t is_INIT_done;
 
 extern int32_t load_offset;
-extern uint8_t go_to_next_state;
+extern volatile uint8_t go_to_next_state;
+extern volatile uint8_t rgb_mask_red_flag;
 
 
 // 각 버튼에 대한 레벨을 저장하기 위한 함수 부분
