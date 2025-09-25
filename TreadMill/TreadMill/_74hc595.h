@@ -22,21 +22,25 @@
 #define SCK 1
 #define RCK 0
 #define SEGMENT_DELAY 5// 7세그먼트 한 자리 표시마다 딜레이
-#define RED 12
-#define GREEN 13
-#define BLUE 14
-#define BUZZER 15
+#define LV_1_DELAY 1000
+#define LV_2_DELAY 800
+#define LV_3_DELAY 600
+#define LV_4_DELAY 500
+#define LV_5_DELAY 400
+
+// 500 280 140 70 30
+
+
 
 void init_74595(void);
 void timer_reset_74595(void);
 void ShiftClock(void);
 void LatchClock(void);
-void WordDataWrite(uint16_t data);
+void WordDataWrite(uint64_t data);
 uint16_t make_16bit_protocol (uint8_t digit_num, uint8_t num);
 void print_7_segment();
-void set_74595_next_state_of_INIT(STATE state);
 
 
-
+extern uint8_t _3sec_counter;
 
 #endif /* _74595_H_ */

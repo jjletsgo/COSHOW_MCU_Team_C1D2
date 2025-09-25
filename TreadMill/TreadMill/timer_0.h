@@ -48,7 +48,7 @@ void timer0_init();
 void timer0_end();
 unsigned long millis();
 uint16_t secs();  // secs() 함수 선언 추가
-uint8_t timer_delay_ms(timer_ms *timer, uint8_t ms_interval);
+uint8_t timer_delay_ms(timer_ms *timer, uint16_t ms_interval);
 uint8_t timer_delay_s(timer_s *timer, uint8_t s_interval);
 
 #endif /* TIMER_0_H_ */

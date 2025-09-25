@@ -49,11 +49,10 @@ int main(void){
    emergency_stop_init();
 
    load_offset = load_cell_read();		// offset 구하기
-   STATE previous_state = IDLE;
+   previous_state = IDLE;
    
    
-   while(1){
-
+   while(1){	
       uint16_t adc_value = read_ADC();
       Button_t pressed = Button_ADC_getPressed(adc_value);
 	  load_active = load_cell_status_check(load_offset);
@@ -98,7 +97,7 @@ int main(void){
 				timer_reset_74595();
 				current_state = INIT;
 				//select_program(LOSE_MY_MIND);		// 원하는 곡 선택
-				set_74595_next_state_of_INIT(PROGRAM_A);
+				next_state = PROGRAM_A;
 
             break;
          case BUTTON_ON_OFF:
@@ -106,7 +105,7 @@ int main(void){
             if(current_state == IDLE) {
 				timer_reset_74595();
 				current_state = INIT; //상태를 INIT으로 변경
-				set_74595_next_state_of_INIT(RUNNING);
+				next_state = RUNNING;
             }
             else if ((current_state == RUNNING) || (current_state == PROGRAM_A)) {
 				timer_reset_74595();
@@ -123,6 +122,23 @@ int main(void){
             break;
          }
       }
+	  
+	 if(is_INIT_done) {
+		 switch(next_state) {
+			 case PROGRAM_A:
+				current_state = PROGRAM_A;
+				is_INIT_done = 0;
+			 break;
+			 case RUNNING:
+				current_state = RUNNING;
+				is_INIT_done = 0;
+			 break;
+			 default:
+				UART_printString("Unknown next_state");
+			 break;
+		 }
+	 }
+	  
      if(current_state != previous_state) {
 	     
 	     switch(current_state) {
@@ -136,12 +152,14 @@ int main(void){
 			 motor_step_init(STEP_HALF_STEP);
 			 speed_level=0;
 			 angle_level=1;
+			 
 
 		     break;
 		     case RUNNING :
 		     UART_printString("RUNNING!!!!\n");
 			 speed_level=1;
 		     motor_dc_setup();
+			 next_state = IDLE;
 		     break;
 			 
 		     case EMERGENCY_STOP :
@@ -159,11 +177,12 @@ int main(void){
 		     UART_printString("PROGRAM_A!!!!\n");
 			 //program_init();
 		     motor_dc_setup();
+			 next_state = IDLE;
 		     break;
 	     }
      }
-     previous_state = current_state;
-	 
+     
+
 	  	if(((current_state == RUNNING) || (current_state == PROGRAM_A)) && !(load_active))
 	  	{
 		  	current_state = EMERGENCY_STOP;
@@ -177,12 +196,15 @@ int main(void){
 			program_play();
 		}
 		*/
-		
-     print_7_segment();//7세그먼트 동작
-	 lcd_state_change();
-     lcd_print_info();
-	 lcd_print_program();
-     motor_step_update();
+		print_7_segment();//7세그먼트 동작
+		lcd_state_change();
+		lcd_print_info();
+		lcd_print_program();
+		motor_step_update();
+			
+     	previous_state = current_state;
+
+ 
 	
 }
 return 1;

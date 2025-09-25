@@ -6,9 +6,11 @@
  */ 
 
 #include "common.h"
-
+STATE next_state = IDLE;
 STATE previous_state = IDLE;
 STATE current_state = IDLE;  
+uint8_t go_to_next_state = 0;
+uint8_t is_INIT_done = 0;
 
 volatile bool turn_off = false; 
 
