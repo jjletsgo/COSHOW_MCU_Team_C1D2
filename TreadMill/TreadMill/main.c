@@ -54,6 +54,7 @@ int main(void){
    
    
    while(1){
+	  previous_state = current_state;
 	
       uint16_t adc_value = read_ADC();
       Button_t pressed = Button_ADC_getPressed(adc_value);
@@ -215,7 +216,7 @@ int main(void){
 		}
      	
 
-		previous_state = current_state;
+
 	
 }
 return 1;
