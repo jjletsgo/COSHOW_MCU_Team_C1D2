@@ -44,7 +44,7 @@ uint8_t timer_delay_ms(timer_ms *timer, uint16_t ms_interval) {
 }
 
 //인자로 타이머의 주소와 , s 단위의 딜레이 간격을 주시면됩니다. 딜레이는 0~255s 까지 가능합니다
-uint8_t timer_delay_s(timer_s *timer, uint8_t s_interval) {
+uint16_t timer_delay_s(timer_s *timer, uint16_t s_interval) {
 	if (timer->is_init_done && (millis() - timer->s_time >= s_interval*1000)) { //초기화 완료된 타이머이고 현재 시간과 타이머의 차이가 ms_interval 이상인 경우
 		timer->s_time = millis();  // 기준점 갱신
 		timer->is_init_done = 0; // 다음번 사용을 위해 초기화 안된 것으로 설정

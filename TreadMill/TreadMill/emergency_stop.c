@@ -8,8 +8,6 @@
 #include "button.h"
 #include "load_cell.h"
 
-bool emergency_trigger = false;
-
 void emergency_stop_init(void)
 {
 	// INT0 입력
@@ -58,7 +56,6 @@ ISR(INT0_vect)
 		if (!state) {
 			// 재시작
 			current_state = IDLE;
-			emergency_trigger = false;
 			expecting_rising = 1;
 			EICRA |= (1<<ISC01) | (1<<ISC00); // rising only
 		}
