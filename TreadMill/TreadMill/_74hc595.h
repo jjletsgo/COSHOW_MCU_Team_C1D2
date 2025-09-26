@@ -22,11 +22,11 @@
 #define SCK 1
 #define RCK 0
 #define SEGMENT_DELAY 5// 7세그먼트 한 자리 표시마다 딜레이
-#define LV_1_DELAY 1000
-#define LV_2_DELAY 800
-#define LV_3_DELAY 600
-#define LV_4_DELAY 500
-#define LV_5_DELAY 400
+#define LV_1_DELAY 500
+#define LV_2_DELAY 280
+#define LV_3_DELAY 140
+#define LV_4_DELAY 70
+#define LV_5_DELAY 30
 
 // 500 280 140 70 30
 

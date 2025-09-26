@@ -11,6 +11,8 @@
 #include <util/delay.h>
 
 
+timer_ms debug_timer;
+
 void load_cell_init(void){
    // 핀 설정
    LOAD_CELL_DT_DDR &= ~(1<<LOAD_CELL_DT_PIN);  // PC3 입력으로 설정
@@ -49,8 +51,13 @@ bool load_cell_status(int32_t offset){
    int32_t raw_value = load_cell_read();
    int32_t net_value = raw_value - offset;
    float weight = load_cell_convert(net_value);
-   
-   if(weight < 5.0 && weight > -5.0){
+   /*
+   if(timer_delay_ms(&debug_timer, 500)) {
+   		UART_print8bitNumber((uint8_t)weight);
+   		UART_printString("\n");
+   }
+   */
+   if(weight < 1.0 && weight > -5.0){
       return false;
    }
    else return true;
