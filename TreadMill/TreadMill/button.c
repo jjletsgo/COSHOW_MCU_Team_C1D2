@@ -24,6 +24,7 @@ Button_t Button_ADC_getRaw(uint16_t ADC_val) {
     else if (ADC_val < BUTTON_ANGLE_UP_MAX) return BUTTON_ANGLE_UP;
     else if (ADC_val < BUTTON_ANGLE_DOWN_MAX) return BUTTON_ANGLE_DOWN;
     else if (ADC_val < BUTTON_PROGRAM_A_MAX) return BUTTON_PROGRAM_A;
+	else if (ADC_val < BUTTON_MUSIC_PLAY_MAX) return BUTTON_MUSIC_PLAY;
 	else if (ADC_val < BUTTON_ON_OFF_MAX) return BUTTON_ON_OFF ;
     else return BUTTON_NONE;
 }

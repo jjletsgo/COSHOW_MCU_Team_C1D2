@@ -19,28 +19,11 @@ STATE next_state_of_INIT = IDLE;
 uint32_t rgb_mask;
 uint16_t segment_mask;
 uint64_t _64bit_protocol;
+uint16_t min = 0;
+uint8_t display_digit = 0;
 
-uint16_t buzzer_duration = 0;
-timer_ms buzzer_timer;          // 부저용 별도 타이머 추가
-#define FREQ_TO_ICR(freq) ((F_CPU / (64UL * (freq))) - 1)
 
-void _3sec_buzzer(void){
-	if ((buzzer_duration == 100) && (current_state == INIT)){
-		buzzer_init();
-		ICR1 = FREQ_TO_ICR(8000);
-		OCR1B = ICR1 / 2;
-	}
-	if(_7_segment_timer.is_init_done == 0) {
-		buzzer_duration = 100;
-	}
 
-	if((buzzer_duration > 0) && (timer_delay_ms(&buzzer_timer, 5))) {
-		buzzer_duration -= 5;
-	}
-	else if (buzzer_duration == 0){
-		buzzer_stop();
-	}
-}
 
 //세그먼트 마스크 업데이트하는 함수
 // 입력: 몇 번째 자리에 출력할지, 어떤 숫자 출력할지
@@ -81,70 +64,50 @@ void init_74595(void) {
 }
 
 
-void timer_reset_74595() {
-	_7_segment_timer.is_init_done=0;
+void reset_74595() {
+	int i = 0;	_7_segment_timer.is_init_done=0;
 	GP_timer.is_init_done=0;
 	segment_display_timer.is_init_done=0;
+	for(i=0;i<4;i++) num_digits[i]=0;
+	min = 0;
 }
 
+void INIT_rgb_mask_init() {
+	rgb_mask = 0x07e3f1f8; 
+}
+void INIT_rgb_mask_shift() {
+	rgb_mask &= rgb_mask << 3;
+}
 
+void IDLE_rgb_mask_init() {
+	rgb_mask = 0x07fc01ff;
+}
 
+void RUNNING_OR_PROGRAM_mask_init() {
+	rgb_mask = 0x0783ffff;
+}
+
+void EMERGENCY_STOP_mask_init() {
+	rgb_mask = 0x07fffe00;
+}
 
 void print_7_segment() {
-	static uint16_t min = 0;
-	static uint8_t display_digit = 0;  // 현재 표시할 자릿수
-	int i = 0;
 
 	switch(current_state) {
 		case INIT:
-			_3sec_buzzer();
-			//------------------------------------rgbmask 업데이트---------------------------------------
-			//현재 상태가 INIT이고 현재 상태와 이전상태가 다르면 rgb_mask 초기화
-			if(current_state != previous_state) {
-				//0x07e3f1f8 = 0b 00000111111000111111000111111000	(L1,L2,L3에 WHITE, 나머지는 끄기)
-				rgb_mask = 0x07e3f1f8; 
-				UART_printString("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n");
-				//UART_printString("this is first INIT!\n");
-				//UART_print32bitNumber(rgb_mask);
-				//UART_printString("\n");
-			} 
-			//1초마다 실행
-			if(timer_delay_s(&_7_segment_timer, 1) && current_state == INIT) {
-				OCR2A -= 20;
-				buzzer_duration = 100;
-				_3sec_counter--; //_3sec_counter 1 감소
-				rgb_mask &= rgb_mask << 3;
-				//UART_print32bitNumber(rgb_mask);
-				//UART_printString("\n");
-			}
-			
-			// --------------------SEGMENT_DELAY 마다 실행----segment_mask 업데이트->rgb_mask와 결합해서 64비트 생성
 			// -> 병렬 출력
 			if(timer_delay_ms(&segment_display_timer, SEGMENT_DELAY)) {
-				if(_3sec_counter ) {  //_3sec_counter가 1 or 2 or 3 이면
-					update_12bit_segment_mask(3, _3sec_counter);
-
+				if(INIT_counter ) {  //_3sec_counter가 1 or 2 or 3 이면
+					update_12bit_segment_mask(3,INIT_counter);
 					update__64bit_protocol();
 					WordDataWrite(_64bit_protocol);
 				} 
 			}
-			// _3sec_counter가 0인 경우
-			if(_3sec_counter == 0) {
-				_3sec_counter = 3;
-				_7_segment_timer.is_init_done = 0;
-				segment_display_timer.is_init_done = 0; 
-				min = 0; //idle에서 running으로 변할때 실행되므로, 여기서 min을 0으로 초기화
-				for(i=0;i<4;i++) num_digits[i]=0; //RUNNING으로 바뀌기 전에 이전 RUNNING 단계에 사용된 num_digits을 0으로 초기화해준다.
-				is_INIT_done = 1;
-			}
 			break;
 		case IDLE:
-			if(current_state != previous_state) {
-				for(i=0;i<4;i++) num_digits[i]=0;
-			}
 			//현재 상태가 IDLE이고 현재 상태와 이전상태가 다르면 rgb_mask 초기화
 			//상태 달라졌을때만 업데이트0x07fc01ff = 0b 00000111 11111100 00000001 11111111 (Green color mask)
-			rgb_mask = 0x07fc01ff;  
+			  
 			// 타이머 기반으로 순차 디스플레이
 			if(timer_delay_ms(&segment_display_timer, SEGMENT_DELAY)) {
 				update_12bit_segment_mask(display_digit, 0);
@@ -154,14 +117,8 @@ void print_7_segment() {
 			}
 
 			break;
-			
-		
 		case RUNNING:	
 		case PROGRAM_A:
-		//현재 상태가 RUNNING OR PROGRAM이고 현재 상태와 이전상태가 다르면 rgb_mask 초기화
-		if(current_state != previous_state) {
-			rgb_mask = 0x0783ffff;
-		}
 		if(timer_delay_s(&_7_segment_timer, 1) && (current_state == RUNNING || current_state == PROGRAM_A)) {
 			min++;  //1초 지나는걸 타이머로 측정하여 1초당 1분을 증가시킴. 원래는 60초당 1분으로 하는게 맞는데 시연을 위해 1분을 1초로 가정
 			UART_printString("1_sec_timer_expired, changing segment number\n");
@@ -196,7 +153,6 @@ void print_7_segment() {
 					UART_printString("\n");
 					
 				break;
-
 		}
 		// 타이머 기반으로 순차 디스플레이
 		if(timer_delay_ms(&segment_display_timer, SEGMENT_DELAY)) {
@@ -206,15 +162,7 @@ void print_7_segment() {
 			display_digit = (display_digit + 1) % 4;  // 0~3 순환
 		}
 		break;
-
 		case EMERGENCY_STOP: //previous_state가 running인데 
-			//현재 상태가 EMERGENCY_STOP이고 현재 상태와 이전상태가 다르면 rgb_mask 초기화
-			if(rgb_mask_red_flag) {
-				rgb_mask = 0x07fffe00;  // 0b111111111111111111000000000
-				rgb_mask_red_flag = 0;
-				UART_printString("Emergency detected-by 74HC595\n");
-			}
-			
 			if(timer_delay_ms(&segment_display_timer, SEGMENT_DELAY)) {
 				update_12bit_segment_mask(display_digit, num_digits[display_digit]);
 				update__64bit_protocol();

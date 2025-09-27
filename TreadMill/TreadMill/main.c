@@ -23,6 +23,7 @@
 int32_t load_offset = 0;
 bool load_active = false;
 
+
 static const uint8_t fullBlock[8] = {
    0b11111,
    0b11111,
@@ -96,7 +97,7 @@ int main(void){
 			}
 			break;
 		 case BUTTON_PROGRAM_A:
-				timer_reset_74595();
+				reset_74595();
 				current_state = INIT;
 				next_state = PROGRAM_A;
 
@@ -104,12 +105,12 @@ int main(void){
          case BUTTON_ON_OFF:
             //UART_printString("BUTTON_ON_OFF is pushed\n");
             if(current_state == IDLE) {
-				timer_reset_74595();
+				reset_74595();
 				current_state = INIT; //상태를 INIT으로 변경
 				next_state = RUNNING;
             }
             else if ((current_state == RUNNING) || (current_state == PROGRAM_A)) {
-				timer_reset_74595();
+				reset_74595();
 				motor_dc_stop();
 				turn_off = true;
 				motor_step_change(angle_level, STEP_DOWN);
@@ -117,6 +118,10 @@ int main(void){
                 current_state = IDLE; // 상태를 IDLE로 변경
             }
             break;
+		 case BUTTON_MUSIC_PLAY:
+			buzzer_init();
+		 
+		 break;
          default:
             UART_printString("정의되지 않은 버튼 입력\n");
             break;
@@ -145,7 +150,9 @@ int main(void){
 		     case IDLE :
 		     UART_printString("IDLE!!!!\n");
 			 buzzer_stop();
-
+			 reset_74595();
+			 IDLE_rgb_mask_init();
+			
 		     break;
 		     case INIT :
 		     UART_printString("INIT!!!!\n");
@@ -154,6 +161,11 @@ int main(void){
 			 motor_step_init(STEP_HALF_STEP);
 			 speed_level=0;
 			 angle_level=1;
+			 reset_74595();
+			 INIT_rgb_mask_init();
+			 buzzer_init();
+			 set_buzzer_duration();
+			 
 
 		     break;
 		     case RUNNING :
@@ -161,6 +173,8 @@ int main(void){
 			 speed_level=1;
 		     motor_dc_setup();
 			 next_state = IDLE;
+			 reset_74595();
+			 RUNNING_OR_PROGRAM_mask_init();
 		     break;
 			 
 		     case EMERGENCY_STOP :
@@ -174,9 +188,10 @@ int main(void){
 		     break;
            case PROGRAM_A :
 		     UART_printString("PROGRAM_A!!!!\n");
-			 buzzer_init();
 		     motor_dc_setup();
 			 next_state = IDLE;
+			 reset_74595();
+			 RUNNING_OR_PROGRAM_mask_init();
 		     break;
 	     }
      }
@@ -195,11 +210,46 @@ int main(void){
 			program_play();
 		}
 		
+		switch(current_state) {
+			
+		case IDLE:
+			IDLE_rgb_mask_init();
+			break;
+		case INIT:
+			if(timer_delay_ms(&INIT_timer, 1000)) {
+				OCR2A -= 20; //DC초기속도
+				set_buzzer_duration();
+				INIT_counter--; //INIT_counter 1 감소
+				INIT_rgb_mask_shift();
+				buzzer_stop();
+				buzzer_init();
+			}
+			if(INIT_counter == 0) {
+				INIT_counter = 3;
+				is_INIT_done = 1;
+				reset_74595();
+				buzzer_stop();
+			}
+			break;
+		case RUNNING:
+		
+			break;
+		case PROGRAM_A:
+			
+			break;
+		case EMERGENCY_STOP:
+			EMERGENCY_STOP_mask_init();
+			break;		
+		}
+	 
+	 
+	 	buzzer_work();	
 		print_7_segment();//7세그먼트 동작
 		lcd_state_change();
 		lcd_print_info();
 		lcd_print_program();
 		motor_step_update();
+		
 			
 		
 	

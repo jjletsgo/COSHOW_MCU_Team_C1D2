@@ -33,13 +33,17 @@
 
 
 void init_74595(void);
-void timer_reset_74595(void);
+void reset_74595(void);
 void ShiftClock(void);
 void LatchClock(void);
 void WordDataWrite(uint64_t data);
 uint16_t make_16bit_protocol (uint8_t digit_num, uint8_t num);
 void print_7_segment();
-
+void INIT_rgb_mask_init();
+void INIT_rgb_mask_shift();
+void IDLE_rgb_mask_init();
+void RUNNING_OR_PROGRAM_mask_init();
+void EMERGENCY_STOP_mask_init();
 
 extern uint8_t _3sec_counter;
 

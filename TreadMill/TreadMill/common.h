@@ -16,6 +16,7 @@
 #include <avr/io.h> 
 #include "timer_0.h"
 #include <stdbool.h>
+#include "buzzer.h"
 
 uint16_t combine_uint8(uint8_t high, uint8_t low);
 typedef enum {
@@ -54,4 +55,6 @@ static inline uint8_t pwm_setup(uint8_t level){
 	return SpeedPwm[level];
 }
 
+extern timer_ms INIT_timer;
+extern volatile uint8_t INIT_counter;
 #endif /* COMMON_H_ */
