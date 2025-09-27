@@ -54,7 +54,7 @@ int main(void){
    
    
    while(1){
-	
+	  previous_state = current_state;
       uint16_t adc_value = read_ADC();
       Button_t pressed = Button_ADC_getPressed(adc_value);
 	  load_active = load_cell_status_check(load_offset);
@@ -201,7 +201,7 @@ int main(void){
 		lcd_print_program();
 		motor_step_update();
 			
-		previous_state = current_state;
+		
 	
 }
 return 1;
