@@ -49,9 +49,7 @@ int main(void){
    emergency_stop_init();
 
    load_offset = load_cell_read();		// offset 구하기
-   previous_state = IDLE;
-   timer_ms debug_timer;
-   
+   previous_state = IDLE;   
    
    while(1){
 	  previous_state = current_state;
@@ -155,9 +153,11 @@ int main(void){
 			 motor_step_init(STEP_HALF_STEP);
 			 speed_level=0;
 			 angle_level=1;
-			 
-
+			 note_index = 0;
+			prev_speed_level = 0;
+			prev_angle_level = 0;
 		     break;
+			 
 		     case RUNNING :
 		     UART_printString("RUNNING!!!!\n");
 			 speed_level=1;
@@ -187,7 +187,12 @@ int main(void){
 		
 	  	if(((current_state == RUNNING) || (current_state == PROGRAM_A)) && !(load_active))
 	  	{
-		  	current_state = IDLE;
+		  	motor_dc_stop();
+		  	program_stop();
+		  	turn_off = true;
+		  	motor_step_change(angle_level, STEP_DOWN);
+		  	turn_off = false;
+			  current_state = IDLE;
 	  	}
 		/*
 	  	if(((current_state == RUNNING) || (current_state == PROGRAM_A)) && !(load_active))
@@ -209,15 +214,6 @@ int main(void){
 		lcd_print_info();
 		lcd_print_program();
 		motor_step_update();
-			/*
-		if(timer_delay_ms(&debug_timer, 500)) {
-			UART_print16bitNumber(current_state);
-			UART_printString("\n");
-		}
-		*/
-     	
-
-
 	
 }
 return 1;

@@ -3,7 +3,6 @@
 #define ADC_H_
 
 #include "common.h"
-#include "ADC.h"
 #include <util/delay.h>
 
 void ADC_init(void);

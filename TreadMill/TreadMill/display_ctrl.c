@@ -20,7 +20,7 @@ timer_s encoder_timer;
 volatile uint8_t count = 0;
 volatile uint16_t dist = 0;
 static uint8_t col_v = 2, col_d = 10;
-static uint8_t previous_ang = 1, previous_spd = 1;
+static uint8_t previous_ang = 0, previous_spd = 0;
 static STATE last_state = -1;
 static timer_s init_msg_timer;
 static bool init_msg = false;
@@ -267,6 +267,7 @@ void lcd_state_change(void)
          case (INIT):
          case (IDLE):
        col_v = 2, col_d = 10;
+	   previous_ang = 0, previous_spd = 0;
        dist = 0;
          lcd_clear();
          lcd_print_str("Initializing...");

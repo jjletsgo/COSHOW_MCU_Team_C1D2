@@ -42,6 +42,11 @@ ISR(INT0_vect)
 		// 상승엣지(LOW->HIGH)만 처리: 현재가 HIGH라면 진짜 상승했다고 판단
 		if (state) {
 			// 정지
+			motor_dc_stop();
+			program_stop();
+			turn_off = true;
+			motor_step_change(angle_level, STEP_DOWN);
+			turn_off = false;
 			current_state = EMERGENCY_STOP;
 			UART_printString("Emergency detected-by ISR\n");
 			rgb_mask_red_flag = 1;

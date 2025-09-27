@@ -144,7 +144,7 @@ void motor_step_change(uint8_t level, step_dir_t dir)
 	if (g_state == STEP_IDLE) {
 		step_set_speed_rpm(10);
 		uint32_t target_steps = 0;
-	
+		
 		if (turn_off == true) {
 			if (level == 1) return;
 			else {
@@ -154,12 +154,12 @@ void motor_step_change(uint8_t level, step_dir_t dir)
 		else {
 			target_steps = STEP_ANGLE;
 		}
-	
+		
 		// 스텝모터 파라미터 설정
 		g_direction = dir;
 		g_remaining_steps = target_steps;
 		g_state = STEP_RUNNING;
-	
+		
 		// 타이머 초기화
 		step_timer.is_init_done = 0;
 	}
