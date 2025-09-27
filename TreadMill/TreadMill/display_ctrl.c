@@ -265,24 +265,38 @@ void lcd_state_change(void)
 
       switch (current_state) {
          case (INIT):
-         case (IDLE):
-       col_v = 2, col_d = 10;
-	   previous_ang = 0, previous_spd = 0;
-       dist = 0;
+         col_v = 2, col_d = 10;
+	      previous_ang = 0, previous_spd = 0;
+         dist = 0;
          lcd_clear();
          lcd_print_str("Initializing...");
          init_msg_timer.is_init_done = 0; // 1초 타이머 리셋
          init_msg = true;   // 메시지 표시 중 플래그 활성화
          break;
          
-		 case RUNNING:
-	 	 case PROGRAM_A:
-	  	 lcd_clear();
-		 lcd_print_level();
-		 encoder_timer.is_init_done = 0;
-		 program_timer.is_init_done = 0;
-		 break;
+         case (IDLE):
+         col_v = 2, col_d = 10;
+	      previous_ang = 0, previous_spd = 0;
+         dist = 0;
+         lcd_clear();
+         lcd_print_str("Press BUTTON");
+        // init_msg_timer.is_init_done = 0; // 1초 타이머 리셋
+        // init_msg = true;   // 메시지 표시 중 플래그 활성화
+         break;
          
+		   case RUNNING:
+	 	   case PROGRAM_A:
+	  	   lcd_clear();
+		   lcd_print_level();
+		   encoder_timer.is_init_done = 0;
+		   program_timer.is_init_done = 0;
+		   break;
+         
+         case EMERGENCY_STOP:
+         lcd_clear();
+         lcd_print_str("EMERGENCY Stop");
+         break;
+
          default:
          lcd_clear();
          break;
