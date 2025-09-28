@@ -7,7 +7,8 @@
 #include <stdbool.h>
 #include "button.h"
 #include "load_cell.h"
-
+#include "program_mode.h"
+#include "buzzer.h"
 void emergency_stop_init(void)
 {
 	// INT0 입력
@@ -43,7 +44,7 @@ ISR(INT0_vect)
 		if (state) {
 			// 정지
 			motor_dc_stop();
-			program_stop();
+			buzzer_stop();
 			turn_off = true;
 			motor_step_change(angle_level, STEP_DOWN);
 			turn_off = false;

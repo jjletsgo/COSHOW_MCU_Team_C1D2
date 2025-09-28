@@ -5,7 +5,7 @@
  *  Author: User
  */ 
 #include "_74hc595.h"
-
+#include "buzzer.h"
 //비트패턴
 uint8_t pattern[] = {0x03, 0x9F, 0x25, 0x0D, 0x99, 0x49, 0x41, 0x1F, 0x01, 0x09}; //숫자패턴 0~9를 미리 배열에 미리 저장해둠
 uint8_t digit[] = {0x08, 0x04, 0x02, 0x01}; //자릿수 선택 
@@ -20,8 +20,27 @@ uint32_t rgb_mask;
 uint16_t segment_mask;
 uint64_t _64bit_protocol;
 
+uint16_t buzzer_duration = 0;
+timer_ms buzzer_timer;          // 부저용 별도 타이머 추가
+#define FREQ_TO_ICR(freq) ((F_CPU / (64UL * (freq))) - 1)
 
+void _3sec_buzzer(void){
+	if ((buzzer_duration == 100) && (current_state == INIT)){
+		buzzer_init();
+		ICR1 = FREQ_TO_ICR(8000);
+		OCR1B = ICR1 / 2;
+	}
+	if(_7_segment_timer.is_init_done == 0) {
+		buzzer_duration = 100;
+	}
 
+	if((buzzer_duration > 0) && (timer_delay_ms(&buzzer_timer, 5))) {
+		buzzer_duration -= 5;
+	}
+	else if (buzzer_duration == 0){
+		buzzer_stop();
+	}
+}
 
 //세그먼트 마스크 업데이트하는 함수
 // 입력: 몇 번째 자리에 출력할지, 어떤 숫자 출력할지
@@ -76,9 +95,9 @@ void print_7_segment() {
 	static uint8_t display_digit = 0;  // 현재 표시할 자릿수
 	int i = 0;
 
-
 	switch(current_state) {
 		case INIT:
+			_3sec_buzzer();
 			//------------------------------------rgbmask 업데이트---------------------------------------
 			//현재 상태가 INIT이고 현재 상태와 이전상태가 다르면 rgb_mask 초기화
 			if(current_state != previous_state) {
@@ -91,12 +110,13 @@ void print_7_segment() {
 			} 
 			//1초마다 실행
 			if(timer_delay_s(&_7_segment_timer, 1) && current_state == INIT) {
+				OCR2A -= 20;
+				buzzer_duration = 100;
 				_3sec_counter--; //_3sec_counter 1 감소
 				rgb_mask &= rgb_mask << 3;
 				//UART_print32bitNumber(rgb_mask);
 				//UART_printString("\n");
 			}
-			
 			
 			// --------------------SEGMENT_DELAY 마다 실행----segment_mask 업데이트->rgb_mask와 결합해서 64비트 생성
 			// -> 병렬 출력

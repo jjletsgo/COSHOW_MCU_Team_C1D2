@@ -6,6 +6,7 @@
 const uint8_t  SpeedPwm[LEVEL_MAX + 1]  = SPEED_TABLE;
 volatile uint8_t speed_pwm = 0;
 volatile uint8_t duty = 0;
+timer_ms dc_setup_timer;
 
 
 // dc 모터 초기화
@@ -30,7 +31,7 @@ void motor_dc_init(void)
 
 // On되는 순간 초기속도 설정
 void motor_dc_setup(void){
-	OCR2A = 230;
+
 	motor_dc_change();
 }
 

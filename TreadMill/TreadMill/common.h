@@ -44,7 +44,7 @@ extern volatile uint8_t angle_level; // 기울기 레벨(1~5)
 #define LEVEL_MIN 1 // 최소레벨 1
 #define LEVEL_MAX 5 // 최대레벨 5
 
-#define SPEED_TABLE {0, 35, 38, 42, 45, 48} // Level 값과 동일화하기 위해서 index 0은 미사용
+#define SPEED_TABLE {0, 40, 43, 46, 49, 52} // Level 값과 동일화하기 위해서 index 0은 미사용
 
 
 extern const uint8_t SpeedPwm[LEVEL_MAX + 1]; //사용하고자 하는 c 코드에서 위의 SPEED_TABLE 불러와서 리스트로 정의
