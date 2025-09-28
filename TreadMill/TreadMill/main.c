@@ -17,6 +17,7 @@
 #include "emergency_stop.h"
 #include "timer_0.h"
 #include "program_mode.h"
+#include "buzzer.h"
 
 #include <util/delay.h>
 int32_t load_offset = 0;
@@ -49,10 +50,10 @@ int main(void){
    emergency_stop_init();
 
    load_offset = load_cell_read();		// offset 구하기
-   previous_state = IDLE;   
+   previous_state = IDLE;
+   
    
    while(1){
-	  previous_state = current_state;
 	
       uint16_t adc_value = read_ADC();
       Button_t pressed = Button_ADC_getPressed(adc_value);
@@ -97,7 +98,6 @@ int main(void){
 		 case BUTTON_PROGRAM_A:
 				timer_reset_74595();
 				current_state = INIT;
-				//select_program(LOSE_MY_MIND);		// 원하는 곡 선택
 				next_state = PROGRAM_A;
 
             break;
@@ -111,7 +111,6 @@ int main(void){
             else if ((current_state == RUNNING) || (current_state == PROGRAM_A)) {
 				timer_reset_74595();
 				motor_dc_stop();
-				program_stop();
 				turn_off = true;
 				motor_step_change(angle_level, STEP_DOWN);
 				turn_off = false;
@@ -145,19 +144,18 @@ int main(void){
 	     switch(current_state) {
 		     case IDLE :
 		     UART_printString("IDLE!!!!\n");
-		     
+			 buzzer_stop();
+
 		     break;
 		     case INIT :
 		     UART_printString("INIT!!!!\n");
 		     motor_dc_init();
+			 OCR2A = 80;	 
 			 motor_step_init(STEP_HALF_STEP);
 			 speed_level=0;
 			 angle_level=1;
-			 note_index = 0;
-			prev_speed_level = 0;
-			prev_angle_level = 0;
+
 		     break;
-			 
 		     case RUNNING :
 		     UART_printString("RUNNING!!!!\n");
 			 speed_level=1;
@@ -168,17 +166,15 @@ int main(void){
 		     case EMERGENCY_STOP :
 		     UART_printString("EMERGENCY_STOP\n");
 		     motor_dc_stop();
-			 program_stop();
+			 buzzer_stop();
 			 turn_off = true;
 			 motor_step_change(angle_level, STEP_DOWN);
 			 turn_off = false;
-			 speed_level=0;
-			 angle_level=1;
 			 
 		     break;
            case PROGRAM_A :
 		     UART_printString("PROGRAM_A!!!!\n");
-			 program_init();
+			 buzzer_init();
 		     motor_dc_setup();
 			 next_state = IDLE;
 		     break;
@@ -187,24 +183,14 @@ int main(void){
 		
 	  	if(((current_state == RUNNING) || (current_state == PROGRAM_A)) && !(load_active))
 	  	{
-		  	motor_dc_stop();
-		  	program_stop();
-		  	turn_off = true;
-		  	motor_step_change(angle_level, STEP_DOWN);
-		  	turn_off = false;
-			  current_state = IDLE;
+		     motor_dc_stop();
+		     buzzer_stop();
+		     turn_off = true;
+		     motor_step_change(angle_level, STEP_DOWN);
+		     turn_off = false;
+		  	 current_state = IDLE;
 	  	}
-		/*
-	  	if(((current_state == RUNNING) || (current_state == PROGRAM_A)) && !(load_active))
-	  	{
-		  	current_state = EMERGENCY_STOP;
-	  	}
-	  	
-	  	else if ((current_state == EMERGENCY_STOP) && (load_active)){
-		  	current_state = IDLE;
-	  	}
-		*/
-		
+
 		if (current_state == PROGRAM_A){
 			program_play();
 		}
@@ -214,6 +200,8 @@ int main(void){
 		lcd_print_info();
 		lcd_print_program();
 		motor_step_update();
+			
+		previous_state = current_state;
 	
 }
 return 1;
