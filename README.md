@@ -1,4 +1,4 @@
-<img width="214" height="236" alt="image" src="https://github.com/user-attachments/assets/51a9b12f-ff82-4a46-a25b-277ec3235442" /># COSHOW_MCU_Team_C2D2
+# COSHOW_MCU_Team_C2D2
 We’re building a treadmill with ATmega328P and 74-series logic ICs as a 3-person team.
 
 <img width="500" height="375" alt="image" src="./images/atmega_treadmil.png"/>
