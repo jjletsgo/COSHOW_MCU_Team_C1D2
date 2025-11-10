@@ -41,7 +41,7 @@ We’re building a treadmill with ATmega328P and 74-series logic ICs as a 3-pers
 |이름|프로필|역할|
 |-----------------|-----------------|-----------------|
 | 정재윤(팀장)    |  <img src="https://github.com/user-attachments/assets/c1c2b1e3-656d-4712-98ab-a15e91efa2da" alt="정재윤" width="100"> | <ul><li>프로젝트 계획 및 관리</li><li>팀 리딩 및 커뮤니케이션</li><li>74HC595 라이브러리 개발</li><li>4digit-FND 라이브러리 개발</li><li>속도 연동 RGB LED 제어 프로토콜 개발</li><li>UART 디버깅 라이브러리 개발</li><li>회로설계</li><li>ADC기반 버튼 값 리딩 라이브러리 개발</li></ul>     |
-| 김민규(팀원)   |  <img src="https://github.com/user-attachments/assets/78ec4937-81bb-4637-975d-631eb3c4601e" alt="김민규" width="100">| <ul><li>메인 페이지 개발</li><li>동아리 만들기 페이지 개발</li><li>커스텀훅 개발</li></ul> |
+| 김민규(팀원)   |  <img src="https://github.com/user-attachments/assets/78ec4937-81bb-4637-975d-631eb3c4601e" alt="김민규" width="100">| <ul><li>Atmega328p Pin 매핑 관리</li><li>모터 구동부 (DC,Stepper) 라이브러리 개발</li><li>Hall Sensor를 이용한 엔코더 라이브러리 개발</li><li>비상정지 ISR 개발</li><li>악보 연동 음악 출력 라이브러리 개발</li><li>하드웨어 설계 및 제작</li></ul> |
 | 이상민(팀원)   |  <img src="https://github.com/user-attachments/assets/78ce1062-80a0-4edb-bf6b-5efac9dd992e" alt="이상민" width="100">    |<ul><li>HD44780 라이브러리 개발</li><li>로그인 페이지 개발</li><li>동아리 찾기 페이지 개발</li><li>동아리 프로필 페이지 개발</li><li>커스텀훅 개발</li></ul>  |
 <br/>
 <br/>
